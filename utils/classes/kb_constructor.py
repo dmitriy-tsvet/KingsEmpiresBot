@@ -104,31 +104,30 @@ class StandardKeyboard(BaseKeyboard):
 
         levels = list(some_buildings.levels)
 
-        for num_building in range(0, some_buildings.count_buildings):
+        for num_building in range(0, 4):
             new_btn = copy.deepcopy(self.btn)
             building_emoji = re.findall(r"(\W)\s", building_model.name)[0]
 
             if (some_buildings.build_timer is not None) and (
                     num_building == some_buildings.build_num):
-
                 time_left = timer.BuildingsTimer().get_build_timer(some_buildings)
-                new_btn.text = "🔨👷 ({} {})".format(*time_left)
-                new_btn.callback_data = "None"
 
-            else:
+                if time_left[0] == 0:
+                    new_btn.text = " 👷🏻‍♂ "
+                    new_btn.callback_data = "build_done".format(num_building)
+                else:
+                    new_btn.text = "🔨👷 ({} {})".format(*time_left)
+                    new_btn.callback_data = "None"
+
+            elif num_building < some_buildings.count_buildings:
                 new_btn.text = "{}🏠 ({} ур.)".format(
                     building_emoji,
                     levels[num_building]
                 )
                 new_btn.callback_data = "check_{}_building_{}".format(buildings_str, num_building)
-
-            keyboard.insert(new_btn)
-
-        for num_building in range(some_buildings.count_buildings, 4):
-            new_btn = copy.deepcopy(self.btn)
-            new_btn.text = "+"
-            new_btn.callback_data = "add_{}_building_{}".format(buildings_str, num_building)
-
+            else:
+                new_btn.text = "+"
+                new_btn.callback_data = "add_{}_building_{}".format(buildings_str, num_building)
             keyboard.insert(new_btn)
 
         keyboard.add(keyboards.buildings.btn_back_buildings)
@@ -149,32 +148,28 @@ class StandardKeyboard(BaseKeyboard):
 
         home_model = ages_list.AgesList.get_age_model(age).home_building
 
-        for num_building in range(0, citizens_table.home_counts):
+        for num_building in range(0, 36):
             new_btn = copy.deepcopy(self.btn)
             if (citizens_table.build_timer is not None) and (
-                    num_building == citizens_table.build_num):
-                time_left = timer.HomeBuildingsTimer().get_build_timer(
+                    num_building == (citizens_table.build_num-1)):
+                build_time_left = timer.HomeBuildingsTimer().get_build_timer(
                     citizens_table, home_model)
 
-                new_btn.text = "🔨"
-                new_btn.callback_data = "home_build_time"
+                if build_time_left[0] == 0:
+                    new_btn.text = " 👷🏻‍♂ "
+                    new_btn.callback_data = "build_done".format(num_building)
+                else:
+                    new_btn.text = "🔨"
+                    new_btn.callback_data = "home_build_time"
 
-            else:
+            elif num_building < citizens_table.home_counts:
                 new_btn.text = " {} ".format(home_model.name)
                 new_btn.callback_data = "home_{}".format(num_building)
+            else:
+                new_btn.text = " + "
+                new_btn.callback_data = "add_home_{}".format(num_building)
 
-            self.rows[0].append(new_btn)
-
-        for num_building in range(citizens_table.home_counts, 36):
-
-            new_btn = copy.deepcopy(self.btn)
-            new_btn.text = " + "
-            new_btn.callback_data = "add_home_{}".format(num_building)
-
-            self.rows[0].append(new_btn)
-
-        for i in range(0, len(self.rows[0])):
-            keyboard.insert(self.rows[0][i])
+            keyboard.insert(new_btn)
 
         keyboard.add(keyboards.buildings.btn_back_buildings)
         session.close_session()
@@ -183,7 +178,7 @@ class StandardKeyboard(BaseKeyboard):
 
     def create_units_keyboard(self):
         keyboard = copy.deepcopy(self.keyboard)
-        keyboard.row_width = 5
+        keyboard.row_width = 8
 
         # session
         session = db_api.Session(user_id=self.user_id)
@@ -201,7 +196,7 @@ class StandardKeyboard(BaseKeyboard):
         # age model
         units_model: tuple = ages_list.AgesList.get_age_model(age).units
 
-        for i in range(0, 5):   # first row
+        for i in range(0, 4):   # first row
             new_btn = copy.deepcopy(self.btn)
 
             if (units_table.upgrade_timer is not None) and (
@@ -217,9 +212,10 @@ class StandardKeyboard(BaseKeyboard):
                 new_btn.text = "{} {}".format(unit_counts[i], emoji_unit)
                 new_btn.callback_data = "check_unit_{}".format(i)
 
-            self.rows[0].append(new_btn)
+            keyboard.insert(new_btn)
 
-        for i in range(0, 5):   # second row
+        keyboard.row()
+        for i in range(0, 4):   # second row
             new_btn = copy.deepcopy(self.btn)
 
             if (units_table.upgrade_timer is not None) and (
@@ -235,10 +231,9 @@ class StandardKeyboard(BaseKeyboard):
                 new_btn.text = "+"
                 new_btn.callback_data = "create_unit_{}".format(i)
 
-            self.rows[1].append(new_btn)
+            keyboard.insert(new_btn)
 
-        keyboard.row(*self.rows[0])
-        keyboard.row(*self.rows[1])
+        keyboard.row()
 
         session.close_session()
         return keyboard

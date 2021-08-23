@@ -7,8 +7,8 @@ from utils.ages import models
 stone_home = models.HomeBuilding(
     name="⛺",
     capacity=30,
-    create_price=100,
-    create_time_sec=10
+    create_price=10,
+    create_time_sec=120
 
 )
 
@@ -23,7 +23,7 @@ bronze_home = models.HomeBuilding(
 
 iron_home = models.HomeBuilding(
     name="🏠",
-    capacity=1300,
+    capacity=230,
     create_price=100,
     create_time_sec=120
 

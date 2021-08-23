@@ -34,13 +34,14 @@ class ThrottlingMiddleware(BaseMiddleware):
             raise CancelHandler()
 
     async def message_throttled(self, message: types.Message, throttled: Throttled):
-        if throttled.exceeded_count <= 3:
-            await message.reply("😼 Не спамь, а то накажу!".format(int(throttled.delta)))
-        else:
-            try:
-                await message.delete()
-            except (exceptions.MessageCantBeDeleted, exceptions.MessageToDeleteNotFound):
-                pass
+        if message.is_command():
+            if throttled.exceeded_count <= 2:
+                await message.reply("😼 Не спамь!".format(int(throttled.delta)))
+            else:
+                try:
+                    await message.delete()
+                except (exceptions.MessageCantBeDeleted, exceptions.MessageToDeleteNotFound):
+                    pass
 
     async def on_process_callback_query(self, callback: types.CallbackQuery, data: dict):
         handler = current_handler.get()

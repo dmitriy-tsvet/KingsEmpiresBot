@@ -16,8 +16,10 @@ from utils.classes import kb_constructor, timer
 from utils.war_system import fight
 from utils.misc.operation_with_lists import subtract_nums_list
 
+from data import config
 
-@dp.message_handler(chat_id=-1001316092745, state="*", commands="territory")
+
+@dp.message_handler(chat_id=config.ADMIN, state="*", commands="territory")
 @dp.throttled(rate=1)
 async def territory_handler(message: types.Message, state: FSMContext):
     data = await state.get_data()

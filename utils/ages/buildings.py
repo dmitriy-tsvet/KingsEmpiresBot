@@ -7,11 +7,11 @@ from utils.ages import models
 hut = models.Building(
     name="🥓 Хибара Охотника",
     resource="food",
-    efficiency=600,
-    create_price=1000,
-    create_time_sec=30,
-    upgrade_price=500,
-    upgrade_time_sec=40,
+    efficiency=200,
+    create_price=50,
+    create_time_sec=300,
+    upgrade_price=25,
+    upgrade_time_sec=180,
 
 )
 
@@ -22,10 +22,10 @@ hut = models.Building(
 paddock = models.Building(
     name="🐑 Загон",
     resource="food",
-    efficiency=800,
-    create_price=2000,
+    efficiency=350,
+    create_price=80,
     create_time_sec=30,
-    upgrade_price=500,
+    upgrade_price=50,
     upgrade_time_sec=30,
 
 )
@@ -34,11 +34,11 @@ paddock = models.Building(
 pottery = models.Building(
     name="🏺 Гончарня",
     resource="stock",
-    efficiency=600,
-    create_price=2000,
-    create_time_sec=30,
-    upgrade_price=500,
-    upgrade_time_sec=30,
+    efficiency=100,
+    create_price=65,
+    create_time_sec=900,
+    upgrade_price=30,
+    upgrade_time_sec=660,
 
 )
 

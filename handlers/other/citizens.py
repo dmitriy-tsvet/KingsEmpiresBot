@@ -11,9 +11,10 @@ import keyboards
 import states
 import re
 
+from data import config
 
-@dp.message_handler(chat_id=-1001316092745, state="*", commands="citizens")
-@dp.throttled(rate=1)
+
+@dp.message_handler(chat_id=config.ADMIN, state="*", commands="citizens")
 async def citizens_handler(message: types.Message, state: FSMContext):
 
     user_id = message.from_user.id
@@ -108,12 +109,11 @@ async def citizens_menu_handler(callback: types.CallbackQuery, state: FSMContext
         else:
             result = transaction.Transaction().get_max_create_num(base_price, townhall_table)
             if result != 0:
-                await callback.message.reply(
-                    "Тебе хватает только на <b>x{}</b> 👨🏼‍🌾".format(result))
+                msg_text = read_txt_file("text/hints/max_create_num")
+                await callback.message.reply(msg_text.format(result, "👨🏼‍🌾"))
             else:
-                await callback.message.reply(
-                    "У тебя закончились ресурсы."
-                )
+                msg_text = read_txt_file("text/hints/few_resources")
+                await callback.answer(msg_text)
 
     elif callback.data == "citizens_info":
         msg_text = read_txt_file("text/citizens_info")
@@ -189,9 +189,10 @@ async def reply_menu_handler(message: types.Message, state: FSMContext):
             else:
                 result = transaction.Transaction().get_max_create_num(base_price, townhall_table)
                 if result != 0:
-                    await message.reply(
-                        "Тебе хватает только на <b>x{}</b> 👨🏼‍🌾".format(result))
+                    msg_text = read_txt_file("text/hints/max_create_num")
+                    await message.reply(msg_text.format(result, "👨🏼‍🌾"))
                 else:
-                    await message.reply("У тебя закончились ресурсы.")
+                    msg_text = read_txt_file("text/hints/few_resources")
+                    await message.reply(msg_text)
 
     session.close_session()

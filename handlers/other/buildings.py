@@ -4,6 +4,7 @@ import json
 import random
 
 from loader import dp
+from data import config
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -16,7 +17,7 @@ from utils.classes import kb_constructor, timer
 import keyboards
 
 
-@dp.message_handler(chat_id=-1001316092745, state="*", commands="buildings")
+@dp.message_handler(chat_id=config.ADMIN, state="*", commands="buildings")
 async def buildings_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
@@ -61,6 +62,7 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
     # tables data
     townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
     citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
+
     age = townhall_table.age
 
     # model of age
@@ -76,6 +78,7 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
         keyboard = keyboard.create_homes_keyboard()
 
         msg_text = read_txt_file("text/buildings/homes")
+
         await buildings_msg.edit_text(
             text=msg_text.format(
                 citizens_table.population,
@@ -162,21 +165,20 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
 
     user_id = callback.from_user.id
     add_home = re.findall(r"add_home_(\d+)", callback.data)
-    build_time = re.findall(r"home_build_time", callback.data)
 
     session = db_api.Session(user_id=user_id)
 
     if add_home:
         session.open_session()
 
+        # table_data
         townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
         citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
 
+        # age model
         age_model = ages_list.AgesList.get_age_model(townhall_table.age)
 
         building_model = age_model.home_building
-
-        num_building = int(add_home[0])
         create_price = building_model.create_price
 
         if townhall_table.money >= create_price:
@@ -189,9 +191,7 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
                 )
 
             townhall_table.money -= create_price
-
-            citizens_table.build_num = num_building
-            citizens_table.home_counts += 1
+            citizens_table.build_num = citizens_table.home_counts+1
             timer.Timer.set_build_timer(citizens_table, building_model)
 
             await data["buildings_msg"].edit_text(
@@ -200,13 +200,20 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
             )
             await states.Buildings.menu.set()
         else:
+            msg_text = read_txt_file("text/hints/price")
             await callback.answer(
-                "Стоимость:\n"
-                "{} 💰".format(create_price),
-                show_alert=True,
+                text=msg_text.format(create_price)+" 💰"
             )
 
-    elif build_time:
+        session.close_session()
+        await callback.answer()
+
+    elif callback.data == "build_done":
+        msg_text = read_txt_file("text/hints/build_done")
+        await callback.answer(
+            text=msg_text,
+        )
+    elif callback.data == "home_build_time":
         citizens_table = session.quick_session(tables.Citizens)
 
         time_left = timer.Timer.get_left_time(citizens_table.build_timer)
@@ -214,6 +221,7 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
             text="⏱ Осталось: {} {}".format(*time_left),
             cache_time=1
         )
+
     else:
         people_dialogs = [
             "а? кто там?", "пенсия наверно пришла",
@@ -229,8 +237,6 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
             text=random_dialog,
             cache_time=1
         )
-    session.close_session()
-    await callback.answer()
 
 
 @dp.callback_query_handler(state=states.Buildings.some_buildings)
@@ -305,9 +311,9 @@ async def some_buildings_handler(callback: types.CallbackQuery, state: FSMContex
 
             townhall_table.money -= create_price
 
-            some_buildings.build_num = num_building
-            some_buildings.count_buildings += 1
+            some_buildings.build_num = some_buildings.count_buildings
             timer.Timer.set_build_timer(some_buildings, building_model)
+            some_buildings.count_buildings += 1
 
             await data["buildings_msg"].edit_text(
                 text=data["buildings_msg"].html_text,
@@ -315,11 +321,15 @@ async def some_buildings_handler(callback: types.CallbackQuery, state: FSMContex
             )
             await states.Buildings.menu.set()
         else:
+            msg_text = read_txt_file("text/hints/price")
             await callback.answer(
-                "Стоимость:\n"
-                "{} 💰".format(create_price),
-                show_alert=True,
+                text=msg_text.format(create_price)+" 💰"
             )
+    elif callback.data == "build_done":
+        msg_text = read_txt_file("text/hints/build_done")
+        await callback.answer(
+            text=msg_text,
+        )
 
     session.close_session()
     await callback.answer("")
@@ -358,9 +368,9 @@ async def about_building_handler(callback: types.CallbackQuery, state: FSMContex
         current_building_lvl = levels[num_building]
 
         if current_building_lvl == 5:
+            msg_text = read_txt_file("text/hints/max_lvl")
             await callback.answer(
-                "Уже максимальный уровень.",
-                show_alert=True,
+                text=msg_text
             )
             session.close_session()
             return
@@ -377,7 +387,7 @@ async def about_building_handler(callback: types.CallbackQuery, state: FSMContex
                 )
 
             townhall_table.money -= upgrade_price
-            some_buildings.build_num = num_building
+            some_buildings.build_num = some_buildings.count_buildings-1
 
             set_time = timer.Timer.set_timer(building_model.upgrade_time_sec)
             some_buildings.build_timer = set_time
@@ -389,10 +399,9 @@ async def about_building_handler(callback: types.CallbackQuery, state: FSMContex
             await states.Buildings.menu.set()
 
         else:
+            msg_text = read_txt_file("text/hints/price")
             await callback.answer(
-                "Стоимость:\n"
-                "{} 💰".format(upgrade_price),
-                show_alert=True,
+                text=msg_text.format(upgrade_price)+" 💰"
             )
 
         session.close_session()

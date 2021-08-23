@@ -1,5 +1,6 @@
 import states
 from loader import dp
+from data import config
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -17,7 +18,7 @@ from utils.ages import models
 import keyboards
 
 
-@dp.message_handler(chat_id=-1001316092745, state="*", commands="townhall")
+@dp.message_handler(chat_id=config.ADMIN, state="*", commands="townhall")
 async def townhall_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     user_mention = message.from_user.get_mention()
@@ -60,7 +61,7 @@ async def townhall_handler(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(state=states.Townhall.menu)
-async def menu_handler(callback: types.CallbackQuery, state: FSMContext):
+async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
 
@@ -181,7 +182,11 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
                 user_id=user_id
             )
             next_table_age.set_next_age(next_age)
-            await callback.message.answer("Ты перешел в другой век!")
+            await callback.message.answer("✨")
+            await callback.message.answer("{} переходит в следующий век!".format(
+                callback.from_user.get_mention()
+            ))
+
         else:
             await callback.answer(
                 text="Переход в {} Век.\n\n"

@@ -5,7 +5,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import ContentTypes
 from utils.misc.read_file import read_txt_file
 
+from data import config
 
-@dp.message_handler(chat_id=-1001316092745, state="*", commands="start", )
+
+@dp.message_handler(state="*", commands="start", )
 async def handler_private_start(message: types.Message, state: FSMContext):
-    pass
+    print(message.chat.id)

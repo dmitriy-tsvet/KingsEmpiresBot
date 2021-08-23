@@ -110,16 +110,12 @@ class BuildingsTimer(Timer):
         set_time = some_buildings.build_timer
         levels = list(some_buildings.levels)
         build_num = some_buildings.build_num
-        current_lvl = levels[build_num]
 
         time_left = self.get_left_time(set_time)
 
         if time_left[0] == 0:
-            index = levels.index(current_lvl)
-            levels.remove(current_lvl)
-            levels.insert(index, current_lvl+1)
+            levels[build_num] += 1
             some_buildings.levels = levels
-
             some_buildings.build_timer = None
             some_buildings.build_num = None
             return 0, "сек."
@@ -134,8 +130,8 @@ class HomeBuildingsTimer(Timer):
         time_left = self.get_left_time(set_time)
 
         if time_left[0] == 0:
-
             citizens_table.capacity += home_model.capacity
+            citizens_table.home_counts += 1
             citizens_table.build_timer = None
             citizens_table.build_num = None
             return 0, "сек."

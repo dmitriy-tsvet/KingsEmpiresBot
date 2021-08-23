@@ -15,8 +15,10 @@ from utils.classes import table_setter, kb_constructor
 from utils.ages import models, ages_list
 from utils.db_api import db_api, tables
 
+from data import config
 
-@dp.message_handler(IsReplyFilter(True), state=states.Reg.input_name_country, chat_id=-1001316092745)
+
+@dp.message_handler(IsReplyFilter(True), state=states.Reg.input_name_country, chat_id=config.ADMIN)
 @dp.throttled(rate=1)
 async def registration_handler(message: types.Message, middleware_data, state: FSMContext):
     user_id = message.from_user.id

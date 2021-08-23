@@ -5,6 +5,9 @@ from aiogram.types import ContentTypes
 import keyboards
 
 
-@dp.message_handler(chat_id=-1001316092745, content_types=ContentTypes.STICKER)
+from data import config
+
+
+@dp.message_handler(chat_id=config.ADMIN, content_types=ContentTypes.STICKER)
 async def start_handler(message: types.Message):
     await message.answer(message.sticker.file_id)
