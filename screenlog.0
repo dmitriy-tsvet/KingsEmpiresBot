@@ -1,0 +1,884 @@
+Traceback (most recent call last):
+  File "/home/country_bot/app.py", line 4, in <module>
+    from loader import dp
+  File "/home/country_bot/loader.py", line 4, in <module>
+    from data import config
+  File "/home/country_bot/data/config.py", line 1, in <module>
+    from environs import Env
+ModuleNotFoundError: No module named 'environs'
+executor.py [LINE:362] #INFO     [2021-08-22 16:00:43,508]  Bot: Age of Wars [@AgeWarsBot]
+executor.py [LINE:358] #WARNING  [2021-08-22 16:00:43,579]  Updates were skipped successfully.
+dispatcher.py [LINE:360] #INFO     [2021-08-22 16:00:43,579]  Start polling.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:05:15,261]  Task exception was never retrieved
+future: <Task finished name='Task-597' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 13 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/units.py", line 148, in units_menu_handler
+    units_msg = await data["units_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 13 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:05:16,450]  Task exception was never retrieved
+future: <Task finished name='Task-605' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 12 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/units.py", line 148, in units_menu_handler
+    units_msg = await data["units_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 12 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:05:16,817]  Task exception was never retrieved
+future: <Task finished name='Task-613' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 12 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/units.py", line 148, in units_menu_handler
+    units_msg = await data["units_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 12 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:05:17,867]  Task exception was never retrieved
+future: <Task finished name='Task-627' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 11 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/units.py", line 148, in units_menu_handler
+    units_msg = await data["units_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 11 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:05:18,964]  Task exception was never retrieved
+future: <Task finished name='Task-631' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 10 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/units.py", line 148, in units_menu_handler
+    units_msg = await data["units_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 10 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:05:28,212]  Task exception was never retrieved
+future: <Task finished name='Task-643' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=MessageNotModified('Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/units.py", line 148, in units_menu_handler
+    units_msg = await data["units_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/utils/exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.MessageNotModified: Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:07:27,600]  Task exception was never retrieved
+future: <Task finished name='Task-922' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=MessageNotModified('Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 259, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 1396, in wrapped
+    return await func(*args, **kwargs)
+  File "/home/country_bot/handlers/other/citizens.py", line 179, in reply_menu_handler
+    edit_msg = await edit_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/utils/exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.MessageNotModified: Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:11:08,736]  Task exception was never retrieved
+future: <Task finished name='Task-1400' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 12 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 197, in home_buildings_handler
+    await data["buildings_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 12 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:11:11,400]  Task exception was never retrieved
+future: <Task finished name='Task-1404' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 9 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 385, in about_building_handler
+    await data["buildings_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 9 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:11:20,852]  Task exception was never retrieved
+future: <Task finished name='Task-1419' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=MessageNotModified('Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 333, in about_building_handler
+    await data["buildings_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/utils/exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.MessageNotModified: Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:11:47,905]  Task exception was never retrieved
+future: <Task finished name='Task-1571' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=MessageNotModified('Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 156, in home_buildings_handler
+    await data["buildings_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/utils/exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.MessageNotModified: Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:11:50,190]  Task exception was never retrieved
+future: <Task finished name='Task-1585' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 30 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 156, in home_buildings_handler
+    await data["buildings_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 30 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:11:51,352]  Task exception was never retrieved
+future: <Task finished name='Task-1589' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 29 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/territory.py", line 171, in select_territory_handler
+    select_units_msg = await edit_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 29 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:11:59,819]  Task exception was never retrieved
+future: <Task finished name='Task-1604' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 21 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 259, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/townhall.py", line 45, in townhall_handler
+    edit_msg = await message.answer(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 361, in answer
+    return await self.bot.send_message(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 314, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 21 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:12:06,288]  Task exception was never retrieved
+future: <Task finished name='Task-1625' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 14 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/territory.py", line 171, in select_territory_handler
+    select_units_msg = await edit_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 14 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:12:20,706]  Task exception was never retrieved
+future: <Task finished name='Task-1650' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 3 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 259, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/townhall.py", line 45, in townhall_handler
+    edit_msg = await message.answer(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 361, in answer
+    return await self.bot.send_message(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 314, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 3 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:12:20,715]  Task exception was never retrieved
+future: <Task finished name='Task-1656' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 3 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/territory.py", line 171, in select_territory_handler
+    select_units_msg = await edit_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 3 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:14:50,549]  Task exception was never retrieved
+future: <Task finished name='Task-1992' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 20 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/citizens.py", line 98, in citizens_menu_handler
+    edit_msg = await edit_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 20 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:14:54,830]  Task exception was never retrieved
+future: <Task finished name='Task-2002' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 16 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/citizens.py", line 98, in citizens_menu_handler
+    edit_msg = await edit_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 16 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:21:01,825]  Task exception was never retrieved
+future: <Task finished name='Task-2931' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 10 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/units.py", line 148, in units_menu_handler
+    units_msg = await data["units_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 10 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:21:01,837]  Task exception was never retrieved
+future: <Task finished name='Task-2927' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 10 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 259, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/townhall.py", line 45, in townhall_handler
+    edit_msg = await message.answer(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 361, in answer
+    return await self.bot.send_message(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 314, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 10 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:21:02,262]  Task exception was never retrieved
+future: <Task finished name='Task-2937' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 9 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/citizens.py", line 111, in citizens_menu_handler
+    await callback.message.reply(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 1502, in reply
+    return await self.bot.send_message(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 314, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 9 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:21:11,466]  Task exception was never retrieved
+future: <Task finished name='Task-2941' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 3 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/units.py", line 148, in units_menu_handler
+    units_msg = await data["units_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 3 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:35:51,754]  Task exception was never retrieved
+future: <Task finished name='Task-4634' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=AttributeError("'NoneType' object has no attribute 'commit'")>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 232, in home_buildings_handler
+    session.close_session()
+  File "/home/country_bot/utils/db_api/db_api.py", line 35, in close_session
+    self.commit()
+  File "/home/country_bot/utils/db_api/db_api.py", line 32, in commit
+    self.session.commit()
+AttributeError: 'NoneType' object has no attribute 'commit'
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:40:45,704]  Task exception was never retrieved
+future: <Task finished name='Task-4833' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=MessageNotModified('Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 259, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 1396, in wrapped
+    return await func(*args, **kwargs)
+  File "/home/country_bot/handlers/other/territory.py", line 295, in reply_menu_handler
+    await edit_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/utils/exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.MessageNotModified: Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:42:30,178]  Task exception was never retrieved
+future: <Task finished name='Task-5102' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 16 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/citizens.py", line 98, in citizens_menu_handler
+    edit_msg = await edit_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 16 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:42:31,591]  Task exception was never retrieved
+future: <Task finished name='Task-5106' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 15 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/townhall.py", line 147, in progress_handler
+    await data["edit_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 15 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:42:32,566]  Task exception was never retrieved
+future: <Task finished name='Task-5115' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 14 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/citizens.py", line 98, in citizens_menu_handler
+    edit_msg = await edit_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 14 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 16:42:32,915]  Task exception was never retrieved
+future: <Task finished name='Task-5119' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 14 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 156, in home_buildings_handler
+    await data["buildings_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 14 seconds.
+2
+2
+2
+2
+2
+2
+2
+base_events.py [LINE:1738] #ERROR    [2021-08-22 18:30:52,259]  Task exception was never retrieved
+future: <Task finished name='Task-10753' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 29 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 79, in buildings_handler
+    await buildings_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 29 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 18:30:57,868]  Task exception was never retrieved
+future: <Task finished name='Task-10757' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 24 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 131, in buildings_handler
+    some_buildings_msg = await buildings_msg.edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 24 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 18:31:03,579]  Task exception was never retrieved
+future: <Task finished name='Task-10774' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 18 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 241, in some_buildings_handler
+    await data["buildings_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 18 seconds.
+base_events.py [LINE:1738] #ERROR    [2021-08-22 18:31:05,388]  Task exception was never retrieved
+future: <Task finished name='Task-10782' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=RetryAfter('Flood control exceeded. Retry in 16 seconds.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/country_bot/handlers/other/buildings.py", line 241, in some_buildings_handler
+    await data["buildings_msg"].edit_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/types/message.py", line 2616, in edit_text
+    return await self.bot.edit_message_text(
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/bot.py", line 2411, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/base.py", line 208, in request
+    return await api.make_request(self.session, self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 16 seconds.
