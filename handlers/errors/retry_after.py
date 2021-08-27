@@ -35,7 +35,7 @@ async def errors_handler(update, exception):
     # # if isinstance(exception, exception.TelegramAPIError):
     #     return True
 
-    if isinstance(exception, exception.RetryAfter):
+    if isinstance(exception, exceptions.RetryAfter):
         return True
 
     # if isinstance(exception, exception.CantParseEntities):
