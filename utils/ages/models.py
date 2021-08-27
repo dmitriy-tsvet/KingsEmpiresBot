@@ -1,4 +1,4 @@
-import json
+import random
 from utils.resource_lvl_buff import resource_lvl_buff
 from utils.misc.fill_in_list import fill_in_list
 
@@ -40,8 +40,9 @@ class Building:
 
 
 class HomeBuilding:
-    def __init__(self, name: str, capacity: int, create_price: int, create_time_sec: int):
+    def __init__(self, name: str, img: str, capacity: int, create_price: int, create_time_sec: int):
         self.name = name
+        self.img = "data/img/homes/{}.webp".format(img)
         self.capacity = capacity
         self.create_price = create_price
         self.create_time_sec = create_time_sec
@@ -92,7 +93,7 @@ class Territory:
 
 class Age:
     def __init__(self, name: str, next_age_price: list,
-                 rank: str, img: str, citizen: Citizen,
+                 rank: str, townhall_img: str, buildings_img: list, citizen: Citizen,
                  units: list, territories: list,
                  food_building: Building,
                  home_building: HomeBuilding, stock_building: Building = None,
@@ -101,7 +102,9 @@ class Age:
                  ):
         self.name = name
         self.rank = rank
-        self.img = "data/img/townhalls/{}.png".format(img)
+        self.townhall_img = "data/img/townhalls/{}.webp".format(townhall_img)
+
+        self.buildings_img = buildings_img
         self.citizen = citizen
         self.next_age_price = fill_in_list(next_age_price)
         # home

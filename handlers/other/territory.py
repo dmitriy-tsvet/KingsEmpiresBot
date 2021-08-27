@@ -6,7 +6,7 @@ import re
 
 from loader import dp
 from aiogram import types
-from aiogram.dispatcher.filters import  IsReplyFilter
+from aiogram.dispatcher.filters import IsReplyFilter
 
 from aiogram.dispatcher import FSMContext
 from utils.misc.read_file import read_txt_file
@@ -26,14 +26,16 @@ async def territory_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
     # sessions
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
+
 
     # tables data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall)
     age = townhall_table.age
 
-    territory_table: tables.Territory = session.built_in_query(tables.Territory)
+    territory_table: tables.Territory = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Territory)
 
     # age model
     age_model: models.Age = ages_list.AgesList.get_age_model(age)
@@ -79,7 +81,7 @@ async def territory_handler(message: types.Message, state: FSMContext):
     })
 
     await states.Territory.menu.set()
-    session.close_session()
+    new_session.close()
 
 
 @dp.callback_query_handler(state=states.Territory.menu)
@@ -99,13 +101,14 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
     models_territories = data.get("models_territories")
 
     # sessions
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
     # tables data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall)
 
-    territory_table: tables.Territory = session.built_in_query(tables.Territory)
+    territory_table: tables.Territory = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Territory)
     owned_territory = list(territory_table.owned_territory)
     indexes_owned_territory = [i for i, x in enumerate(owned_territory) if x is True]
 
@@ -118,7 +121,7 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
                 msg_text.format(*capture_time_left),
                 reply_markup=keyboards.territory.kb_capturing
             )
-            session.close_session()
+            new_session.close()
             return await callback.answer("")
 
         keyboard = kb_constructor.StandardKeyboard(user_id=user_id)
@@ -132,7 +135,7 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
         await states.Territory.select_territory.set()
     elif callback.data == "get_tax":
         if territory_table.capturing_index is not None:
-            session.close_session()
+            new_session.close()
             return await callback.answer("Во время захвата, нельзя собрать налог.")
 
         income = timer.TerritoryTimer.get_money_timer(
@@ -143,7 +146,7 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
         townhall_table.money += income
         await callback.answer("+ {} 💰".format(income), show_alert=False)
 
-    session.close_session()
+    new_session.close()
 
 
 @dp.callback_query_handler(state=states.Territory.select_territory)
@@ -205,12 +208,14 @@ async def select_units_handler(callback: types.CallbackQuery, state: FSMContext)
     keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)
 
     # sessions
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
+    
 
     # tables data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
-    units_table: tables.Units = session.built_in_query(tables.Units)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall)
+    units_table: tables.Units = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Units)
 
     page_move = re.findall(r"page_(\d+)", callback.data)
     select_units = re.findall(r"select_units_(\d+)", callback.data)
@@ -228,7 +233,7 @@ async def select_units_handler(callback: types.CallbackQuery, state: FSMContext)
         selected_units += int(select_units[0])
 
         if selected_units > units_table.all_unit_counts:
-            session.close_session()
+            new_session.close()
             return await callback.answer("У вас нету столько воинов.")
 
         msg_text = read_txt_file("text/territory/select_units")
@@ -243,7 +248,7 @@ async def select_units_handler(callback: types.CallbackQuery, state: FSMContext)
     elif callback.data == "waiting_capture":
 
         if selected_units == 0:
-            session.close_session()
+            new_session.close()
             return await callback.answer(
                 "Вы не выбрали кол-во воинов для захвата."
             )
@@ -262,7 +267,7 @@ async def select_units_handler(callback: types.CallbackQuery, state: FSMContext)
         await states.Territory.waiting_capture.set()
 
     await callback.answer()
-    session.close_session()
+    new_session.close()
 
 
 @dp.message_handler(IsReplyFilter(True), state=states.Territory.select_units)
@@ -275,22 +280,23 @@ async def reply_menu_handler(message: types.Message, state: FSMContext):
     select_units_msg: types.Message = data.get("select_units_msg")
 
     # sessions
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
+    
 
     # tables data
-    units_table: tables.Units = session.built_in_query(tables.Units)
+    units_table: tables.Units = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Units)
 
     if message.reply_to_message.message_id == edit_msg.message_id:
         count_selected_units = re.findall(r"(\d+)", message.text)
         if not count_selected_units:
-            session.close_session()
+            new_session.close()
             return
 
         selected_units += int(count_selected_units[0])
 
         if selected_units > units_table.all_unit_counts:
-            session.close_session()
+            new_session.close()
             return await message.reply("У вас нету столько воинов.")
 
         msg_text = read_txt_file("text/territory/select_units")
@@ -302,7 +308,7 @@ async def reply_menu_handler(message: types.Message, state: FSMContext):
             "selected_units": selected_units
         })
 
-    session.close_session()
+    new_session.close()
 
 
 @dp.callback_query_handler(state=states.Territory.waiting_capture)
@@ -324,12 +330,14 @@ async def waiting_capture_handler(callback: types.CallbackQuery, state: FSMConte
     territory_index: int = data.get("territory_index")
 
     # sessions
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
+    
 
     # tables data
-    territory_table: tables.Territory = session.built_in_query(tables.Territory)
-    units_table: tables.Units = session.built_in_query(tables.Units)
+    territory_table: tables.Territory = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Territory)
+    units_table: tables.Units = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Units)
     unit_counts = list(units_table.unit_counts)
 
     if callback.data == "start_capture":
@@ -355,5 +363,5 @@ async def waiting_capture_handler(callback: types.CallbackQuery, state: FSMConte
         await states.Territory.menu.set()
 
     await callback.answer()
-    session.close_session()
+    new_session.close()
 

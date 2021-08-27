@@ -1,11 +1,6 @@
 import random
 import time
-
-
-def subtract_percent(num, percent):
-    percent = 100 - percent
-    num = num * percent / 100
-    return num
+from utils.classes import maths
 
 
 def fight(attack_army, defend_army):
@@ -37,11 +32,11 @@ def fight(attack_army, defend_army):
         else:
             return "attacker"
 
-    large_army_80 = subtract_percent(large_army, 80)
-    large_army_60 = subtract_percent(large_army, 60)
-    large_army_40 = subtract_percent(large_army, 40)
-    large_army_20 = subtract_percent(large_army, 20)
-    large_army_10 = subtract_percent(large_army, 10)
+    large_army_80 = maths.Maths.subtract_percent(large_army, 80)
+    large_army_60 = maths.Maths.subtract_percent(large_army, 60)
+    large_army_40 = maths.Maths.subtract_percent(large_army, 40)
+    large_army_20 = maths.Maths.subtract_percent(large_army, 20)
+    large_army_10 = maths.Maths.subtract_percent(large_army, 10)
 
     if large_army_80 > small_army:
         return data["large"]
@@ -91,7 +86,7 @@ def riot(territory_owned, territory_units):
         riot_territory = random.choice(owned)
         index = territory_owned.index(riot_territory)
         random_percent = random.randint(30, 60)
-        units = subtract_percent(territory_units[index], random_percent)
+        units = maths.Maths.subtract_percent(territory_units[index], random_percent)
         return {"units": units, "riot_territory": riot_territory}
     else:
         return None

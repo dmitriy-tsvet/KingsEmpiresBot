@@ -38,14 +38,16 @@ async def registration_handler(message: types.Message, middleware_data, state: F
         else:
             country_name = result2[0]
 
-            session = db_api.Session(user_id=user_id)
-            session.open_session()
+            session = db_api.NewSession()
 
             new_table = table_setter.TableSetter(user_id=user_id)
             new_table.set_stone_age(message, country_name)
 
-            townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
-            citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
+            townhall_table: tables.TownHall = session.filter_by_user_id(
+                user_id=user_id, table=tables.TownHall)
+            citizens_table: tables.Citizens = session.filter_by_user_id(
+                user_id=user_id, table=tables.Citizens)
+
             age = townhall_table.age
 
             # age model
@@ -71,4 +73,4 @@ async def registration_handler(message: types.Message, middleware_data, state: F
                 "edit_msg": edit_msg,
             })
             await states.Townhall.menu.set()
-            session.close_session()
+            session.close()

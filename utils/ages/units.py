@@ -4,16 +4,6 @@ from utils.ages import models
 # Stone Age
 #
 
-archer = models.Unit(
-    name="🏹 Лучник",
-    weight=1.2,
-    create_price=[4, ],
-    create_time_sec=12,
-    upgrade_price=[20, ],
-    upgrade_time_sec=360,
-    max_lvl=6,
-)
-
 swordsman = models.Unit(
     name="🗡 Мечник",
     weight=1.8,
@@ -58,33 +48,106 @@ thrower = models.Unit(
 legionary = models.Unit(
     name="🛡 Легионер",
     weight=2.7,
-    create_price=[60, 40,],
+    create_price=[14, 7, ],
     create_time_sec=70,
-    upgrade_price=[200, ],
-    upgrade_time_sec=30,
+    upgrade_price=[90, ],
+    upgrade_time_sec=600,
     max_lvl=4,
 
 )
 
 hoplite = models.Unit(
     name="🗡 Гоплит",
-    weight=6.0,
-    create_price=[110, ],
-    create_time_sec=220,
-    upgrade_price=[200, ],
-    upgrade_time_sec=30,
+    weight=3.2,
+    create_price=[21, 5],
+    create_time_sec=120,
+    upgrade_price=[78, 20],
+    upgrade_time_sec=780,
+    max_lvl=6,
+)
+
+#
+# Early Middle Age
+#
+
+archer = models.Unit(
+    name="🏹 Лучник",
+    weight=2.7,
+    create_price=[14, 9, ],
+    create_time_sec=70,
+    upgrade_price=[90, ],
+    upgrade_time_sec=600,
+    max_lvl=4,
+
+)
+
+rider = models.Unit(
+    name="🐴 Всадник",
+    weight=3.2,
+    create_price=[21, 5],
+    create_time_sec=120,
+    upgrade_price=[78, 20],
+    upgrade_time_sec=780,
     max_lvl=6,
 )
 
 
-rider = models.Unit(
-    name="🐴 Всадник",
+#
+# High Middle Age
+#
+
+healer = models.Unit(
+    name="📿 Лекарь",
     weight=6.0,
-    create_price=[110, ],
-    create_time_sec=220,
-    upgrade_price=[200, ],
-    upgrade_time_sec=30,
-    max_lvl=6,
+    create_price=[70, ],
+    create_time_sec=150,
+    upgrade_price=[48, 140],
+    upgrade_time_sec=900,
+    max_lvl=3,
+)
+
+mercenary = models.Unit(
+    name="🪓 Наемник",
+    weight=6.0,
+    create_price=[70, ],
+    create_time_sec=150,
+    upgrade_price=[48, 140],
+    upgrade_time_sec=900,
+    max_lvl=3,
+)
+
+#
+# Late Middle Age
+#
+
+halberdist = models.Unit(
+    name="🗡 Алебардист",
+    weight=6.0,
+    create_price=[70, ],
+    create_time_sec=150,
+    upgrade_price=[48, 140],
+    upgrade_time_sec=900,
+    max_lvl=3,
+)
+
+crossbowman = models.Unit(
+    name="🏹 Арбалетчик",
+    weight=6.0,
+    create_price=[70, ],
+    create_time_sec=150,
+    upgrade_price=[48, 140],
+    upgrade_time_sec=900,
+    max_lvl=3,
+)
+
+paladin = models.Unit(
+    name="🐴🛡 Паладин",
+    weight=6.0,
+    create_price=[70, ],
+    create_time_sec=150,
+    upgrade_price=[48, 140],
+    upgrade_time_sec=900,
+    max_lvl=3,
 )
 
 

@@ -21,14 +21,14 @@ async def units_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
     # session
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
+    
 
     # tables data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(user_id=user_id, table=tables.TownHall)
     age = townhall_table.age
 
-    units_table: tables.Units = session.built_in_query(tables.Units)
+    units_table: tables.Units = new_session.filter_by_user_id(user_id=user_id, table=tables.Units)
 
     # model of age
     units_model: tuple = ages_list.AgesList.get_age_model(age).units
@@ -66,7 +66,7 @@ async def units_handler(message: types.Message, state: FSMContext):
     })
 
     await states.Units.menu.set()
-    session.close_session()
+    new_session.close()
 
 
 @dp.callback_query_handler(state=states.Units.menu)
@@ -77,12 +77,13 @@ async def units_menu_handler(callback: types.CallbackQuery, state: FSMContext):
 
     user_id = callback.from_user.id
 
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
     # table data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
-    units_table: tables.Units = session.built_in_query(tables.Units)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall)
+    units_table: tables.Units = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Units)
 
     levels = units_table.levels
     age = townhall_table.age
@@ -182,21 +183,20 @@ async def units_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     else:
         await callback.answer("")
 
-    session.close_session()
+    new_session.close()
 
 
-@dp.message_handler(IsReplyFilter(True), state=states.Units.menu)
+@dp.message_handler(IsReplyFilter(True), regexp=r"сделать \d+ \d+", state=states.Units.menu)
 async def reply_menu_handler(message: types.Message, state: FSMContext):
     data = await state.get_data()
     user_id = message.from_user.id
     edit_msg: types.Message = data.get("edit_msg")
 
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
     # table data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
-    units_table: tables.Units = session.built_in_query(tables.Units)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(user_id=user_id, table=tables.TownHall)
+    units_table: tables.Units = new_session.filter_by_user_id(user_id=user_id, table=tables.Units)
 
     age = townhall_table.age
 
@@ -282,7 +282,7 @@ async def reply_menu_handler(message: types.Message, state: FSMContext):
             units_table.creation_queue = units_empty_list
             units_table.creation_timer = units_empty_list
 
-    session.close_session()
+    new_session.close()
 
 
 @dp.callback_query_handler(state=states.Units.about_unit)
@@ -302,12 +302,12 @@ async def units_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     num_unit = data.get("num_unit")
 
     # session
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
+    
 
     # table data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
-    units_table: tables.Units = session.built_in_query(tables.Units)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(user_id=user_id, table=tables.TownHall)
+    units_table: tables.Units = new_session.filter_by_user_id(user_id=user_id, table=tables.Units)
 
     levels = list(units_table.levels)
     age = townhall_table.age
@@ -323,7 +323,7 @@ async def units_menu_handler(callback: types.CallbackQuery, state: FSMContext):
         upgrade_time_left = timer.Timer.get_left_time(units_table.upgrade_timer)
 
         if upgrade_time_left[0] > 0:
-            session.close_session()
+            new_session.close()
             return await callback.answer(
                 text="✨ Уже идёт прокачка."
             )
@@ -331,7 +331,7 @@ async def units_menu_handler(callback: types.CallbackQuery, state: FSMContext):
         current_level = levels[num_unit]
 
         if current_level > max_lvl:
-            session.close_session()
+            new_session.close()
             msg_text = read_txt_file("text/hints/max_lvl")
             return await callback.answer(
                 text=msg_text
@@ -344,7 +344,7 @@ async def units_menu_handler(callback: types.CallbackQuery, state: FSMContext):
             units_table.levels = levels
 
             timer.Timer.set_upgrade_timer(units_table, current_unit)
-            session.close_session()
+            new_session.close()
 
             keyboard = kb_constructor.StandardKeyboard(
                 user_id=user_id
@@ -368,4 +368,4 @@ async def units_menu_handler(callback: types.CallbackQuery, state: FSMContext):
             )
 
     await callback.answer()
-    session.close_session()
+    new_session.close()

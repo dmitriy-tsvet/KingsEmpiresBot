@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, JSON
 from sqlalchemy import create_engine
 
-from sqlalchemy.orm import relationship, backref, sessionmaker
+from sqlalchemy.orm import relationship, backref, sessionmaker, Session
 
 from sqlalchemy.ext.declarative import declarative_base
 from .my_sqlalchemy_type import JsonDecorator
@@ -18,7 +18,6 @@ class User(Base):
     first_name = Column(String)
     last_name = Column(String)
     username = Column(String)
-    mention = Column(String)
 
     townhall = relationship("TownHall", backref=backref("user", uselist=False))
     units = relationship("Units", backref=backref("user", uselist=False))
@@ -26,6 +25,8 @@ class User(Base):
     food_buildings = relationship("FoodBuildings", backref=backref("user", uselist=False))
     stock_buildings = relationship("StockBuildings", backref=backref("user", uselist=False))
     citizens = relationship("Citizens", backref=backref("user", uselist=False))
+    market = relationship("Market", backref=backref("user", uselist=False))
+    finance = relationship("Finance", backref=backref("user", uselist=False))
 
 
 class TownHall(Base):
@@ -114,13 +115,36 @@ class Citizens(Base):
     build_num = Column(Integer)
 
 
-def create_session():
+class Market(Base):
+    __tablename__ = "market"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.user_id"))
+    product = Column(String)
+    count = Column(Integer)
+    price = Column(Integer)
+    timer = Column(Integer)
+
+
+class Finance(Base):
+    __tablename__ = "finance"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.user_id"))
+    culture = Column(Integer)
+    economics = Column(Integer)
+    army = Column(Integer)
+    money_timer = Column(Integer)
+    sanction_timer = Column(Integer)
+
+
+def create_session() -> Session:
     # connect_args={'timeout': 1}
     sqlite_file_path = "database.db"
     engine = create_engine("sqlite:///{}".format(sqlite_file_path))
-    Session = sessionmaker(bind=engine)
+    NewSession = sessionmaker(bind=engine)
 
-    session = Session()
+    session: Session = NewSession()
 
     return session
 

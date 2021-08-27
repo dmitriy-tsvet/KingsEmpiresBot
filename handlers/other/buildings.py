@@ -1,6 +1,5 @@
 import states
 import re
-import json
 import random
 
 from loader import dp
@@ -21,17 +20,22 @@ import keyboards
 async def buildings_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
     # tables data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(user_id=user_id, table=tables.TownHall)
     age = townhall_table.age
+
+    age_model: models.Age = ages_list.AgesList.get_age_model(age)
 
     keyboard = kb_constructor.StandardKeyboard(
         user_id=user_id
     )
     keyboard = keyboard.create_buildings_keyboard(age)
+    building_img = random.choice(age_model.buildings_img)
+
+    with open("data/img/buildings/{}.webp".format(building_img), 'rb') as sticker:
+        await message.answer_sticker(sticker=sticker)
 
     buildings_msg = await message.answer(
         text="<b>Здания </b>\n\n"
@@ -41,7 +45,7 @@ async def buildings_handler(message: types.Message, state: FSMContext):
         reply_markup=keyboard
     )
 
-    session.close_session()
+    new_session.close()
 
     await state.set_data({
         "buildings_msg": buildings_msg
@@ -56,12 +60,13 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
 
     buildings_msg = data.get("buildings_msg")
 
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
     # tables data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
-    citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall)
+    citizens_table: tables.Citizens = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Citizens)
 
     age = townhall_table.age
 
@@ -94,8 +99,9 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
         type_building = str(type_buildings[0])
 
         if type_building == "food":
-            some_buildings_table: tables.FoodBuildings = session.built_in_query(
-                tables.FoodBuildings
+            some_buildings_table: tables.FoodBuildings = new_session.filter_by_user_id(
+                user_id=user_id,
+                table=tables.FoodBuildings
             )
 
             building_model = age_model.food_building
@@ -106,8 +112,8 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
             emoji = "🍇"
 
         elif type_building == "stock":
-            some_buildings_table: tables.StockBuildings = session.built_in_query(
-                tables.StockBuildings
+            some_buildings_table: tables.StockBuildings = new_session.filter_by_user_id(
+                user_id=user_id, table=tables.StockBuildings
             )
             building_model = age_model.stock_building
             keyboard = keyboard.create_some_buildings_keyboard(
@@ -122,7 +128,7 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
             emoji = None
 
         if building_model is None:
-            session.close_session()
+            new_session.close()
 
             return await callback.answer(
                 text="Слишком маленький век.",
@@ -147,7 +153,7 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
         })
         await states.Buildings.some_buildings.set()
 
-    session.close_session()
+    new_session.close()
     await callback.answer("")
 
 
@@ -166,14 +172,16 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
     user_id = callback.from_user.id
     add_home = re.findall(r"add_home_(\d+)", callback.data)
 
-    session = db_api.Session(user_id=user_id)
+    new_session = db_api.NewSession()
 
     if add_home:
-        session.open_session()
+        
 
         # table_data
-        townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
-        citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
+        townhall_table: tables.TownHall = new_session.filter_by_user_id(
+            user_id=user_id, table=tables.TownHall)
+        citizens_table: tables.Citizens = new_session.filter_by_user_id(
+            user_id=user_id, table=tables.Citizens)
 
         # age model
         age_model = ages_list.AgesList.get_age_model(townhall_table.age)
@@ -185,7 +193,7 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
             time_left = timer.Timer.get_left_time(citizens_table.build_timer)
 
             if time_left[0] > 0:
-                session.close_session()
+                new_session.close()
                 return await callback.answer(
                     text="уже идет стройка",
                 )
@@ -205,7 +213,7 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
                 text=msg_text.format(create_price)+" 💰"
             )
 
-        session.close_session()
+        new_session.close()
         await callback.answer()
 
     elif callback.data == "build_done":
@@ -214,14 +222,15 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
             text=msg_text,
         )
     elif callback.data == "home_build_time":
-        citizens_table = session.quick_session(tables.Citizens)
+        citizens_table = new_session.filter_by_user_id(
+            user_id=user_id, table=tables.Citizens)
 
         time_left = timer.Timer.get_left_time(citizens_table.build_timer)
         await callback.answer(
             text="⏱ Осталось: {} {}".format(*time_left),
             cache_time=1
         )
-
+        new_session.close()
     else:
         people_dialogs = [
             "а? кто там?", "пенсия наверно пришла",
@@ -237,6 +246,7 @@ async def home_buildings_handler(callback: types.CallbackQuery, state: FSMContex
             text=random_dialog,
             cache_time=1
         )
+        new_session.close()
 
 
 @dp.callback_query_handler(state=states.Buildings.some_buildings)
@@ -256,21 +266,22 @@ async def some_buildings_handler(callback: types.CallbackQuery, state: FSMContex
     type_building = data.get("type_building")
     building_model = data.get("building_model")
 
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
     # tables data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
-    age = townhall_table.age
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall)
 
     selected_building = re.findall(r"check_{}_building_(\d)".format(type_building), callback.data)
     add_building = re.findall(r"add_{}_building_(\d)".format(type_building), callback.data)
 
     if type_building == "food":
-        some_buildings: tables.FoodBuildings = session.built_in_query(tables.FoodBuildings)
+        some_buildings: tables.FoodBuildings = new_session.filter_by_user_id(
+            user_id=user_id, table=tables.FoodBuildings)
         emoji = "🍇"
     else:
-        some_buildings: tables.StockBuildings = session.built_in_query(tables.StockBuildings)
+        some_buildings: tables.StockBuildings = new_session.filter_by_user_id(
+            user_id=user_id, table=tables.StockBuildings)
         emoji = "🌲"
 
     if selected_building:
@@ -304,7 +315,7 @@ async def some_buildings_handler(callback: types.CallbackQuery, state: FSMContex
             time_left_build = timer.Timer.get_left_time(some_buildings.build_timer)
 
             if time_left_build[0] > 0:
-                session.close_session()
+                new_session.close()
                 return await callback.answer(
                     text="уже идет стройка",
                 )
@@ -331,7 +342,7 @@ async def some_buildings_handler(callback: types.CallbackQuery, state: FSMContex
             text=msg_text,
         )
 
-    session.close_session()
+    new_session.close()
     await callback.answer("")
 
 
@@ -350,19 +361,21 @@ async def about_building_handler(callback: types.CallbackQuery, state: FSMContex
     user_id = callback.from_user.id
 
     if callback.data == "upgrade_building":
-        session = db_api.Session(user_id=user_id)
-        session.open_session()
+        new_session = db_api.NewSession()
 
         num_building: int = data.get("num_building")
         building_model: models.Building = data.get("building_model")
         type_building: str = data.get("type_building")
 
-        townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+        townhall_table: tables.TownHall = new_session.filter_by_user_id(
+            user_id=user_id, table=tables.TownHall)
 
         if type_building == "food":
-            some_buildings: tables.FoodBuildings = session.built_in_query(tables.FoodBuildings)
+            some_buildings: tables.FoodBuildings = new_session.filter_by_user_id(
+                user_id=user_id, table=tables.FoodBuildings)
         else:
-            some_buildings: tables.StockBuildings = session.built_in_query(tables.StockBuildings)
+            some_buildings: tables.StockBuildings = new_session.filter_by_user_id(
+                user_id=user_id, table=tables.StockBuildings)
 
         levels = list(some_buildings.levels)
         current_building_lvl = levels[num_building]
@@ -372,7 +385,7 @@ async def about_building_handler(callback: types.CallbackQuery, state: FSMContex
             await callback.answer(
                 text=msg_text
             )
-            session.close_session()
+            new_session.close()
             return
 
         upgrade_price = building_model.upgrade_price
@@ -381,13 +394,13 @@ async def about_building_handler(callback: types.CallbackQuery, state: FSMContex
             time_left_build = timer.Timer.get_left_time(some_buildings.build_timer)
 
             if time_left_build[0] > 0:
-                session.close_session()
+                new_session.close()
                 return await callback.answer(
                     text="уже идет стройка",
                 )
 
             townhall_table.money -= upgrade_price
-            some_buildings.build_num = some_buildings.count_buildings-1
+            some_buildings.build_num = num_building
 
             set_time = timer.Timer.set_timer(building_model.upgrade_time_sec)
             some_buildings.build_timer = set_time
@@ -404,4 +417,4 @@ async def about_building_handler(callback: types.CallbackQuery, state: FSMContex
                 text=msg_text.format(upgrade_price)+" 💰"
             )
 
-        session.close_session()
+        new_session.close()

@@ -18,15 +18,21 @@ from data import config
 async def citizens_handler(message: types.Message, state: FSMContext):
 
     user_id = message.from_user.id
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
-    citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    new_session = db_api.NewSession()
+    
+    citizens_table: tables.Citizens = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Citizens)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall)
+
+    age_model: models.Age = ages_list.AgesList.get_age_model(townhall_table.age)
 
     time_left = timer.CitizenTimer.get_create_timer(citizens_table)
 
     keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)
     keyboard = keyboard.create_citizens_keyboard(0)
+    with open(age_model.home_building.img, 'rb') as sticker:
+        await message.answer_sticker(sticker=sticker)
 
     msg_text = read_txt_file("text/citizens")
     edit_msg = await message.answer(
@@ -42,7 +48,7 @@ async def citizens_handler(message: types.Message, state: FSMContext):
         "edit_msg": edit_msg
     })
     await states.Citizens.menu.set()
-    session.close_session()
+    new_session.close()
 
 
 @dp.callback_query_handler(state=states.Citizens.menu)
@@ -52,11 +58,12 @@ async def citizens_menu_handler(callback: types.CallbackQuery, state: FSMContext
     edit_msg: types.Message = data.get("edit_msg")
 
     # sessions
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
-    citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    citizens_table: tables.Citizens = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Citizens)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall)
 
     keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)
 
@@ -76,7 +83,7 @@ async def citizens_menu_handler(callback: types.CallbackQuery, state: FSMContext
         creation_queue = citizens_table.creation_queue
 
         if creation_count + (population+creation_queue) > citizens_table.capacity:
-            session.close_session()
+            new_session.close()
             return await callback.answer("🏠 Мало места! Нужно больше домов.")
 
         base_price = age_model.citizen.create_price
@@ -129,21 +136,21 @@ async def citizens_menu_handler(callback: types.CallbackQuery, state: FSMContext
         )
 
     await callback.answer()
-    session.close_session()
+    new_session.close()
 
 
-@dp.message_handler(IsReplyFilter(True), state=states.Citizens.menu)
-@dp.throttled(rate=2)
+@dp.message_handler(IsReplyFilter(True), regexp=r"сделать \d+", state=states.Citizens.menu)
 async def reply_menu_handler(message: types.Message, state: FSMContext):
     data = await state.get_data()
     user_id = message.from_user.id
     edit_msg = data.get("edit_msg")
 
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
-    citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    citizens_table: tables.Citizens = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Citizens)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall)
 
     age_model: models.Age = ages_list.AgesList.get_age_model(townhall_table.age)
 
@@ -156,7 +163,7 @@ async def reply_menu_handler(message: types.Message, state: FSMContext):
             creation_queue = citizens_table.creation_queue
 
             if creation_count + (population + creation_queue) > citizens_table.capacity:
-                session.close_session()
+                new_session.close()
                 return await message.reply("🏠 Мало места! Нужно больше домов.")
 
             base_price = age_model.citizen.create_price
@@ -187,7 +194,8 @@ async def reply_menu_handler(message: types.Message, state: FSMContext):
                 )
                 await state.update_data({"edit_msg": edit_msg})
             else:
-                result = transaction.Transaction().get_max_create_num(base_price, townhall_table)
+                result = transaction.Transaction().get_max_create_num(
+                    base_price, townhall_table)
                 if result != 0:
                     msg_text = read_txt_file("text/hints/max_create_num")
                     await message.reply(msg_text.format(result, "👨🏼‍🌾"))
@@ -195,4 +203,4 @@ async def reply_menu_handler(message: types.Message, state: FSMContext):
                     msg_text = read_txt_file("text/hints/few_resources")
                     await message.reply(msg_text)
 
-    session.close_session()
+    new_session.close()

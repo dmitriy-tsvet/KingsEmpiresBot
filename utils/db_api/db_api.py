@@ -1,36 +1,18 @@
 from utils.db_api import tables
-import typing
+from sqlalchemy.orm import Session
 
 
-class Session:
-    def __init__(self, user_id: int):
-        self.user_id = user_id
-        self.session = None
+class NewSession:
+    def __init__(self):
+        self.session: Session = tables.create_session()
 
-    def open_session(self):
-        self.session = tables.create_session()
-
-    def built_in_query(self, table_model):
-        query = self.session.query(table_model).filter(
-            table_model.user_id == self.user_id).first()
+    def filter_by_user_id(self, user_id: int, table):
+        query = self.session.query(table).filter(
+            table.user_id == user_id).first()
 
         return query
 
-    def quick_session(self, table_model):
-        self.session = tables.create_session()
-
-        query = self.session.query(table_model).filter(
-            table_model.user_id == self.user_id).first()
-
-        self.session.close()
-        return query
-
-    def insert_data(self, class_exemplar):
-        self.session.add(class_exemplar)
-
-    def commit(self):
-        self.session.commit()
-
-    def close_session(self):
-        self.commit()
-        self.session.close()
+    def close(self):
+        if self.session is not None:
+            self.session.commit()
+            self.session.close()

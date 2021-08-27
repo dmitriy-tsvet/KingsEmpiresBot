@@ -25,15 +25,11 @@ class TableSetter:
             False for i in range(0, len(age.territories))
         ]
 
-        session = db_api.Session(
-            user_id=self.user_id
-        )
-        session.open_session()
+        new_session = db_api.NewSession()
 
         user = tables.User(
             user_id=self.user_id, first_name=first_name,
             last_name=last_name, username=username,
-            mention=user_mention
         )
 
         units = tables.Units(
@@ -52,9 +48,9 @@ class TableSetter:
             user_id=self.user_id,
             country_name=country_name,
             age=age.name,
-            money=200,
+            money=0,
             timer=None,
-            food=100,
+            food=0,
             stock=0,
             energy=0,
             graviton=0
@@ -98,15 +94,23 @@ class TableSetter:
             build_num=None
         )
 
-        session.insert_data(user)
-        session.insert_data(units)
-        session.insert_data(townhall)
-        session.insert_data(territory)
-        session.insert_data(food_buildings)
-        session.insert_data(stock_buildings)
-        session.insert_data(citizens)
+        finance = tables.Finance(
+            user_id=self.user_id,
+            culture=20,
+            economics=20,
+            army=20,
+        )
 
-        session.close_session()
+        new_session.session.add(user)
+        new_session.session.add(units)
+        new_session.session.add(townhall)
+        new_session.session.add(territory)
+        new_session.session.add(food_buildings)
+        new_session.session.add(stock_buildings)
+        new_session.session.add(citizens)
+        new_session.session.add(finance)
+
+        new_session.close()
 
     def set_next_age(self, next_age: str):
 
@@ -124,10 +128,11 @@ class TableSetter:
             1 for i in range(0, len(age.units))
         ]
 
-        session = db_api.Session(user_id=self.user_id)
-        session.open_session()
+        new_session = db_api.NewSession()
 
-        units_table: tables.Units = session.built_in_query(tables.Units)
+        units_table: tables.Units = new_session.filter_by_user_id(
+            user_id=self.user_id, table=tables.Units)
+
         units_table.all_unit_counts = 0
         units_table.unit_counts = units_empty_list
         units_table.creation_queue = units_empty_list
@@ -137,35 +142,40 @@ class TableSetter:
         units_table.upgrade_timer = None
         units_table.upgrade_unit_num = None
 
-        townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+        townhall_table: tables.TownHall = new_session.filter_by_user_id(
+            user_id=self.user_id, table=tables.TownHall)
         townhall_table.age = next_age
 
-        territory_table: tables.Territory = session.built_in_query(tables.Territory)
+        territory_table: tables.Territory = new_session.filter_by_user_id(
+            user_id=self.user_id, table=tables.Territory)
+
         territory_table.tax_timer = None
         territory_table.capture_timer = None
         territory_table.owned_territory = territories_empty_list
         territory_table.capturing_index = None
         territory_table.capture_state = None
 
-        food_buildings_table: tables.FoodBuildings = session.built_in_query(
-            tables.FoodBuildings)
+        food_buildings_table: tables.FoodBuildings = new_session.filter_by_user_id(
+            user_id=self.user_id, table=tables.FoodBuildings)
+
         food_buildings_table.count_buildings = 1
         food_buildings_table.levels = [1, 0, 0, 0]
         food_buildings_table.build_timer = None
         food_buildings_table.build_num = None
 
-        stock_buildings_table: tables.StockBuildings = session.built_in_query(
-            tables.StockBuildings)
+        stock_buildings_table: tables.StockBuildings = new_session.filter_by_user_id(
+            user_id=self.user_id, table=tables.StockBuildings)
+
         stock_buildings_table.count_buildings = 1
         stock_buildings_table.levels = [1, 0, 0, 0]
         stock_buildings_table.build_timer = None
         stock_buildings_table.build_num = None
 
-        citizens_table: tables.Citizens = session.built_in_query(
-            tables.Citizens)
+        citizens_table: tables.Citizens = new_session.filter_by_user_id(
+            user_id=self.user_id, table=tables.Citizens)
 
         citizens_table.home_counts = 1
         citizens_table.build_timer = None
         citizens_table.build_num = None
 
-        session.close_session()
+        new_session.close()

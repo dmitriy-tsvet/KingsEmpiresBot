@@ -24,12 +24,18 @@ async def townhall_handler(message: types.Message, state: FSMContext):
     user_mention = message.from_user.get_mention()
 
     # sessions
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
     # tables data
-    citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    citizens_table: tables.Citizens = new_session.filter_by_user_id(
+        user_id=user_id,
+        table=tables.Citizens
+    )
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id,
+        table=tables.TownHall
+    )
+
     age = townhall_table.age
 
     # age model
@@ -39,8 +45,8 @@ async def townhall_handler(message: types.Message, state: FSMContext):
     kb_townhall = kb_constructor.StandardKeyboard(user_id=user_id)
     kb_townhall = kb_townhall.create_townhall_keyboard(age)
 
-    townhall_img = open(age_model.img, "rb")
-    await message.answer_sticker(sticker=townhall_img)
+    with open(age_model.townhall_img, 'rb') as sticker:
+        await message.answer_sticker(sticker=sticker)
 
     msg_text = read_txt_file("text/townhall/townhall")
     edit_msg = await message.answer(
@@ -57,7 +63,7 @@ async def townhall_handler(message: types.Message, state: FSMContext):
         "index": 0
     })
     await states.Townhall.menu.set()
-    session.close_session()
+    new_session.close()
 
 
 @dp.callback_query_handler(state=states.Townhall.menu)
@@ -66,17 +72,23 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
     user_id = callback.from_user.id
 
     # sessions
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
     # tables data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall
+    )
     age = townhall_table.age
 
-    citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
-    food_buildings_table: tables.FoodBuildings = session.built_in_query(tables.FoodBuildings)
-    stock_buildings_table: tables.StockBuildings = session.built_in_query(tables.StockBuildings)
-
+    citizens_table: tables.Citizens = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.Citizens
+    )
+    food_buildings_table: tables.FoodBuildings = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.FoodBuildings
+    )
+    stock_buildings_table: tables.StockBuildings = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.StockBuildings
+    )
     # age model
     age_model = ages_list.AgesList.get_age_model(age)
     list_ages = ages_list.AgesList.get_list_ages()
@@ -137,7 +149,7 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
 
         await callback.answer("+ {} 🌲".format(income), show_alert=False)
 
-    session.close_session()
+    new_session.close()
 
 
 @dp.callback_query_handler(state=states.Townhall.progress)
@@ -155,11 +167,12 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
 
     # sessions
-    session = db_api.Session(user_id=user_id)
-    session.open_session()
+    new_session = db_api.NewSession()
 
     # tables data
-    townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+    townhall_table: tables.TownHall = new_session.filter_by_user_id(
+        user_id=user_id, table=tables.TownHall
+    )
     age = townhall_table.age
 
     # age model
@@ -175,7 +188,6 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
             price=price,
             townhall_table=townhall_table
         )
-        price_text = transaction.Transaction.get_text_price(price)
 
         if result_transaction:
             next_table_age = table_setter.TableSetter(
@@ -188,15 +200,12 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
             ))
 
         else:
+            msg_text = read_txt_file("text/few_resources")
             await callback.answer(
-                text="Переход в {} Век.\n\n"
-                "Стоимость:\n"
-                "{}".format(next_age, price_text),
-                show_alert=True,
-                cache_time=1
+                text=msg_text
             )
 
         await callback.answer()
 
-    session.close_session()
+    new_session.close()
 

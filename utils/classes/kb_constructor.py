@@ -95,11 +95,11 @@ class StandardKeyboard(BaseKeyboard):
         keyboard = copy.deepcopy(self.keyboard)
         keyboard.row_width = 2
 
-        session = db_api.Session(user_id=self.user_id)
-        session.open_session()
-        townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+        new_session = db_api.NewSession()
+        
+        townhall_table: tables.TownHall = new_session.filter_by_user_id(user_id=self.user_id, table=tables.TownHall)
 
-        some_buildings: table_model = session.built_in_query(table_model)
+        some_buildings: table_model = new_session.filter_by_user_id(user_id=self.user_id, table=table_model)
         buildings_str = str(some_buildings)
 
         levels = list(some_buildings.levels)
@@ -131,7 +131,7 @@ class StandardKeyboard(BaseKeyboard):
             keyboard.insert(new_btn)
 
         keyboard.add(keyboards.buildings.btn_back_buildings)
-        session.close_session()
+        new_session.close()
 
         return keyboard
 
@@ -139,11 +139,11 @@ class StandardKeyboard(BaseKeyboard):
         keyboard = copy.deepcopy(self.keyboard)
         keyboard.row_width = 6
 
-        session = db_api.Session(user_id=self.user_id)
-        session.open_session()
+        new_session = db_api.NewSession()
+        
 
-        citizens_table: tables.Citizens = session.built_in_query(tables.Citizens)
-        townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+        citizens_table: tables.Citizens = new_session.filter_by_user_id(user_id=self.user_id, table=tables.Citizens)
+        townhall_table: tables.TownHall = new_session.filter_by_user_id(user_id=self.user_id, table=tables.TownHall)
         age = townhall_table.age
 
         home_model = ages_list.AgesList.get_age_model(age).home_building
@@ -172,7 +172,7 @@ class StandardKeyboard(BaseKeyboard):
             keyboard.insert(new_btn)
 
         keyboard.add(keyboards.buildings.btn_back_buildings)
-        session.close_session()
+        new_session.close()
 
         return keyboard
 
@@ -181,16 +181,17 @@ class StandardKeyboard(BaseKeyboard):
         keyboard.row_width = 8
 
         # session
-        session = db_api.Session(user_id=self.user_id)
-        session.open_session()
-
+        new_session = db_api.NewSession()
+    
         get_timer = timer.UnitsTimer()
 
         # table data
-        units_table: tables.Units = session.built_in_query(tables.Units)
+        units_table: tables.Units = new_session.filter_by_user_id(
+            user_id=self.user_id, table=tables.Units)
         unit_counts = units_table.unit_counts
 
-        townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+        townhall_table: tables.TownHall = new_session.filter_by_user_id(
+            user_id=self.user_id, table=tables.TownHall)
         age = townhall_table.age
 
         # age model
@@ -235,7 +236,7 @@ class StandardKeyboard(BaseKeyboard):
 
         keyboard.row()
 
-        session.close_session()
+        new_session.close()
         return keyboard
 
     def create_territory_keyboard(self):
@@ -243,15 +244,15 @@ class StandardKeyboard(BaseKeyboard):
         keyboard.row_width = 2
 
         # session
-        session = db_api.Session(user_id=self.user_id)
-        session.open_session()
+        new_session = db_api.NewSession()
 
         # table data
-        territory_table: tables.Territory = session.built_in_query(tables.Territory)
+        territory_table: tables.Territory = new_session.filter_by_user_id(user_id=self.user_id, table=tables.Territory)
         owned_territory = list(territory_table.owned_territory)
         indexes_owned_territory = [i for i, x in enumerate(owned_territory) if x is True]
 
-        townhall_table: tables.TownHall = session.built_in_query(tables.TownHall)
+        townhall_table: tables.TownHall = new_session.filter_by_user_id(
+            user_id=self.user_id, table=tables.TownHall)
         age = townhall_table.age
 
         age_model: models.Age = ages_list.AgesList.get_age_model(age)
@@ -269,6 +270,17 @@ class StandardKeyboard(BaseKeyboard):
             keyboard.insert(btn)
 
         keyboard.add(keyboards.territory.btn_back_territory)
+        return keyboard
+
+    def create_product_keyboard(self, table_user_id: int):
+        keyboard = copy.deepcopy(self.keyboard)
+
+        if self.user_id == table_user_id:
+            keyboard.add(keyboards.market.btn_delete_product)
+        else:
+            keyboard.add(keyboards.market.btn_buy_product)
+
+        keyboard.add(keyboards.market.btn_back_products_list)
         return keyboard
 
 
@@ -327,7 +339,6 @@ class PaginationKeyboard(BaseKeyboard):
         right_btn_mv.callback_data = "page_{}".format(
             self.get_right_page(list_paginated_buttons, page))
 
-        keyboard.add(keyboards.citizens.btn_info)
         keyboard.row(
             left_btn_mv,
             *list_paginated_buttons[page],
@@ -377,4 +388,157 @@ class PaginationKeyboard(BaseKeyboard):
 
         return keyboard
 
+    def create_finance_keyboard(self, page: int = 0):
+        keyboard = copy.deepcopy(self.keyboard)
+        list_values = [8, 16, 32, 64, 128, 256, 512, 1028]
+        list_buttons = []
+        for i in list_values:
+            btn = copy.deepcopy(self.btn)
+            btn.text = "+{} 💰".format(i)
+            btn.callback_data = "{}".format(i)
+
+            list_buttons.append(btn)
+
+        left_btn_mv = copy.deepcopy(self.btn)
+        right_btn_mv = copy.deepcopy(self.btn)
+
+        list_paginated_buttons = []
+        for i in range(0, len(list_values)):
+            btn = self.paginate(data=list_buttons, page=i, limit=1)
+
+            if not btn:
+                break
+
+            list_paginated_buttons.append(btn)
+
+        left_btn_mv.text = "⊲"
+        left_btn_mv.callback_data = "page_{}".format(self.get_left_page(list_paginated_buttons, page))
+
+        right_btn_mv.text = "⊳"
+        right_btn_mv.callback_data = "page_{}".format(
+            self.get_right_page(list_paginated_buttons, page))
+
+        keyboard.row(
+            keyboards.finance.btn_culture,
+            keyboards.finance.btn_economics,
+            keyboards.finance.btn_army
+        )
+
+        keyboard.row(
+            left_btn_mv,
+            *list_paginated_buttons[page],
+            right_btn_mv
+        )
+
+        return keyboard
+
+    def create_products_list_keyboard(self, page: int = 0):
+        keyboard = copy.deepcopy(self.keyboard)
+
+        new_session = db_api.NewSession()
+
+        market_table: typing.List[tables.Market] = new_session.session.query(
+            tables.Market).all()
+
+        list_buttons = []
+        for index in range(0, len(market_table)):
+
+            time_left = timer.Timer.get_left_time(market_table[index].timer)
+            if time_left[0] == 0:
+                new_session.session.query(tables.Market).filter_by(
+                    id=market_table[index].id
+                ).delete()
+                new_session.session.commit()
+                continue
+
+            btn = copy.deepcopy(self.btn)
+            btn.text = "{} {} - {} 💰".format(
+                market_table[index].count,
+                market_table[index].product,
+                market_table[index].price
+            )
+            btn.callback_data = "product_{}".format(market_table[index].id)
+            list_buttons.append(btn)
+
+        left_btn_mv = copy.deepcopy(self.btn)
+        right_btn_mv = copy.deepcopy(self.btn)
+
+        list_paginated_buttons = []
+        for i in range(0, len(market_table)):
+
+            btn = self.paginate(data=list_buttons, page=i, limit=8)
+
+            if not btn:
+                break
+
+            list_paginated_buttons.append(btn)
+
+        left_btn_mv.text = "⊲"
+        left_btn_mv.callback_data = "page_{}".format(self.get_left_page(list_paginated_buttons, page))
+
+        right_btn_mv.text = "⊳"
+        right_btn_mv.callback_data = "page_{}".format(
+            self.get_right_page(list_paginated_buttons, page))
+
+        if not list_buttons:
+            keyboard.row(
+                left_btn_mv,
+                keyboards.market.btn_my_products,
+                right_btn_mv
+            )
+            return keyboard, 1
+
+        for btn in list_paginated_buttons[page]:
+            keyboard.add(btn)
+
+        keyboard.row(
+            left_btn_mv,
+            keyboards.market.btn_my_products,
+            right_btn_mv
+        )
+        new_session.close()
+
+        return keyboard, len(list_paginated_buttons)
+
+    def create_user_products_keyboard(self, page: int = 0):
+        keyboard = copy.deepcopy(self.keyboard)
+
+        new_session = db_api.NewSession()
+
+        market_table: typing.List[tables.Market] = new_session.session.query(
+            tables.Market).filter_by(user_id=self.user_id).all()
+
+        if not market_table:
+            keyboard.add(keyboards.market.btn_back_products_list)
+            return keyboard
+
+        list_buttons = []
+        for index in range(0, len(market_table)):
+
+            btn = copy.deepcopy(self.btn)
+            btn.text = "{} {} - {} 💰".format(
+                market_table[index].count,
+                market_table[index].product,
+                market_table[index].price
+            )
+            btn.callback_data = "product_{}".format(market_table[index].id)
+            list_buttons.append(btn)
+
+        list_paginated_buttons = []
+        for i in range(0, len(market_table)):
+
+            btn = self.paginate(data=list_buttons, page=i, limit=8)
+
+            if not btn:
+                break
+
+            list_paginated_buttons.append(btn)
+
+        for btn in list_paginated_buttons[page]:
+            keyboard.add(btn)
+
+        keyboard.add(keyboards.market.btn_back_products_list)
+        new_session.close()
+
+        return keyboard
 

@@ -1,9 +1,11 @@
 import time
 from utils.db_api import db_api, tables
 from utils.ages import models
+from utils.classes import maths
 import json
 import typing
-
+import random
+from utils.misc.operation_with_lists import subtract_nums_list, add_nums_list
 
 class Timer:
 
@@ -276,4 +278,109 @@ class TerritoryTimer(Timer):
             territory_table.capture_timer = 0
 
         return time_left
+
+
+class FinanceTimer(Timer):
+    def get_money_timer(self, finance_table, citizen_table) -> int:
+        set_time = finance_table.money_timer
+
+        time_left = self.get_left_time(set_time)
+
+        spend = maths.Maths.subtract_percent(citizen_table.population, 70)
+        spend = random.randint(0, spend)
+        spend_min = (spend / 60)
+
+        time_passed = self.get_time_passed_min(time_left)
+        if time_passed <= 1:
+            spend = 0
+        else:
+            spend = int(time_passed * spend_min)
+
+        return spend
+
+    def get_culture_timer(self, finance_table, citizen_table) -> int:
+
+        spend_money = self.get_money_timer(finance_table, citizen_table)
+        finance_table.culture -= spend_money
+
+        if finance_table.culture > 0:
+            return 0
+
+        set_time = finance_table.sanction_timer
+        time_left = self.get_left_time(set_time)
+
+        if citizen_table.population < 80:
+            return 0
+
+        spend = maths.Maths.subtract_percent(citizen_table.population, 70)
+        spend = random.randint(0, spend)
+        spend_min = (spend / 60)
+
+        time_passed = self.get_time_passed_min(time_left)
+        if time_passed <= 1:
+            spend = 0
+        else:
+            spend = int(time_passed * spend_min)
+
+        time_set = self.set_timer(3600)
+        finance_table.sanction_timer = time_set
+        citizen_table.population -= spend
+
+    def get_economics_timer(self, finance_table, townhall_table, citizen_table) -> int:
+
+        spend_money = self.get_money_timer(finance_table, citizen_table)
+        finance_table.economics -= spend_money
+
+        if finance_table.economics > 0:
+            return 0
+
+        set_time = finance_table.sanction_timer
+        time_left = self.get_left_time(set_time)
+
+        if townhall_table.food < 50:
+            return 0
+
+        spend = maths.Maths.subtract_percent(townhall_table.food, 70)
+        spend = random.randint(0, spend)
+        spend_min = (spend / 60)
+
+        time_passed = self.get_time_passed_min(time_left)
+        if time_passed <= 1:
+            spend = 0
+        else:
+            spend = int(time_passed * spend_min)
+
+        time_set = self.set_timer(3600)
+        finance_table.sanction_timer = time_set
+        townhall_table.food -= spend
+
+    def get_army_timer(self, finance_table, units_table, citizen_table) -> int:
+
+        spend_money = self.get_money_timer(finance_table, citizen_table)
+        finance_table.army -= spend_money
+
+        if finance_table.army > 0:
+            return 0
+
+        set_time = finance_table.sanction_timer
+        time_left = self.get_left_time(set_time)
+
+        if units_table.all_unit_counts < 20:
+            return 0
+
+        spend = maths.Maths.subtract_percent(units_table.all_unit_counts, 70)
+        spend = random.randint(0, spend)
+        spend_min = (spend / 60)
+
+        time_passed = self.get_time_passed_min(time_left)
+        if time_passed <= 1:
+            spend = 0
+        else:
+            spend = int(time_passed * spend_min)
+
+        time_set = self.set_timer(3600)
+        finance_table.sanction_timer = time_set
+        units_table.all_unit_counts -= spend
+        unit_counts = list(units_table.unit_counts)
+        units_table.unit_counts = subtract_nums_list(spend, unit_counts)
 
