@@ -57,8 +57,8 @@ async def registration_handler(message: types.Message, middleware_data, state: F
             kb_townhall = kb_constructor.StandardKeyboard(user_id=user_id)
             kb_townhall = kb_townhall.create_townhall_keyboard(age)
 
-            townhall_img = open(age_model.img, "rb")
-            await message.answer_sticker(sticker=townhall_img)
+            with open(age_model.townhall_img, 'rb') as sticker:
+                await message.answer_sticker(sticker=sticker)
 
             msg_text = read_txt_file("text/townhall/townhall")
             edit_msg = await message.answer(
