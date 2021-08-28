@@ -74,6 +74,9 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
         product: tables.Market = new_session.session.query(tables.Market).filter_by(
             id=product_id
         ).first()
+        if product is None:
+            return await callback.answer("Этот товар уже кто-то купил.")
+
         user_table: tables.User = new_session.filter_by_user_id(
             user_id=product.user_id,
             table=tables.User

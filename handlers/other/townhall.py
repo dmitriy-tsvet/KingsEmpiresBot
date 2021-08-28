@@ -200,7 +200,7 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
             ))
 
         else:
-            msg_text = read_txt_file("text/few_resources")
+            msg_text = read_txt_file("text/hints/few_resources")
             await callback.answer(
                 text=msg_text
             )
