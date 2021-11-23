@@ -12,6 +12,6 @@ btn_delete_product = types.InlineKeyboardButton(
     text="удалить", callback_data="delete_product"
 )
 
-btn_back_products_list = types.InlineKeyboardButton(
-    text="назад", callback_data="back_products_list"
+btn_back_market = types.InlineKeyboardButton(
+    text="назад", callback_data="back_market"
 )

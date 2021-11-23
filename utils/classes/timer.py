@@ -1,14 +1,14 @@
 import time
 from utils.db_api import db_api, tables
-from utils.ages import models
+from utils.models import models, ages, base
 from utils.classes import maths
 import json
 import typing
 import random
 from utils.misc.operation_with_lists import subtract_nums_list, add_nums_list
 
-class Timer:
 
+class Timer:
     @staticmethod
     def get_left_time(set_time: int) -> tuple:
         if set_time is None:
@@ -31,6 +31,23 @@ class Timer:
                 "{}.{}".format(time_left_hour, time_left_min)
             )
             return time_left_hour, "ч."
+
+    @staticmethod
+    def get_left_time_sec(set_time: int) -> int:
+        if set_time is None:
+            return 0
+
+        time_left_sec = int(set_time - time.time())
+
+        if time_left_sec < 0:
+            return 0
+
+        return time_left_sec
+
+    @staticmethod
+    def get_time_passed_sec(set_time_sec, time_left_sec: int) -> int:
+        print(set_time_sec, time_left_sec)
+        return set_time_sec - time_left_sec
 
     @staticmethod
     def get_time_passed_min(time_left: tuple) -> int:
@@ -64,69 +81,106 @@ class Timer:
         return set_time
 
 
-class MoneyTimer(Timer):
+class BuildingTimer(Timer):
+    def get_build_timer(self, user_id):
 
-    def get_money_timer(self, townhall_table, citizen_table) -> int:
-        set_time = townhall_table.timer
+        session = db_api.CreateSession()
+        townhall: tables.TownHall = session.db.query(
+            tables.TownHall).filter_by(user_id=user_id).first()
 
-        time_left = self.get_left_time(set_time)
+        buildings: tables.Buildings = session.db.query(
+            tables.Buildings).filter_by(user_id=user_id).first()
+        base_buildings = ages.Age.get_all_buildings()
 
-        income = int(citizen_table.population * 2)
-        income_min = income / 60
+        build_timer = list(buildings.build_timer)
+        for i in buildings.build_timer:
 
-        time_passed = self.get_time_passed_min(time_left)
-        if time_passed <= 1:
-            money_income = 0
-        else:
-            money_income = int(time_passed * income_min)
+            time_left = self.get_left_time(i["timer"])
 
-        self.set_income_timer(townhall_table)
+            if i.get("build_num") is None:
+                if time_left[0] == 0:
+                    build_timer.remove(i)
+                    buildings.build_timer = build_timer
+                continue
 
-        return money_income
+            build_num = i["build_num"]
+            build_pos = i["build_pos"]
 
+            if time_left[0] == 0:
+                if type(base_buildings[build_num]) is base.HomeBuilding:
+                    townhall.population += base_buildings[build_num].capacity
 
-class BuildingsTimer(Timer):
+                crnt_buildings = list(buildings.buildings)
+                crnt_buildings[build_pos] = build_num
+                build_timer.remove(i)
+                buildings.buildings = crnt_buildings
+                buildings.build_timer = build_timer
 
-    async def get_resource_timer(self, buildings_table, building) -> int:
-        building_efficiency = building.efficiency
-        set_time = buildings_table.timer
-
-        lvl_buff = building.get_lvl_buff(buildings_table)
-
-        time_left = self.get_left_time(set_time)
-
-        income_min = building_efficiency / 60
-
-        time_passed = self.get_time_passed_min(time_left)
-        if time_passed <= 1:
-            resource_income = 0
-        else:
-            resource_income = (time_passed * income_min) * lvl_buff
-
-        resource_income = int(resource_income)
-        self.set_income_timer(buildings_table)
-
-        return resource_income
-
-    def get_build_timer(self, some_buildings):
-        set_time = some_buildings.build_timer
-        levels = list(some_buildings.levels)
-        build_num = some_buildings.build_num
-
-        time_left = self.get_left_time(set_time)
-
-        if time_left[0] == 0:
-            levels[build_num] += 1
-            some_buildings.levels = levels
-            some_buildings.build_timer = None
-            some_buildings.build_num = None
-            return 0, "сек."
-        else:
-            return time_left
+        session.close()
 
 
-class HomeBuildingsTimer(Timer):
+class ManufactureTimer(Timer):
+    def get_creation_queue(self, user_id):
+        session = db_api.CreateSession()
+        manufacture: tables.Manufacture = session.db.query(
+            tables.Manufacture).filter_by(user_id=user_id).first()
 
+        creation_queue = list(manufacture.creation_queue)
+        wait_queue = list(manufacture.wait_queue)
+        for queue in creation_queue:
+            time_left = self.get_left_time(queue["timer"])
+
+            if time_left[0] == 0:
+                creation_queue.remove(queue)
+                wait_queue.append(queue)
+
+                manufacture.wait_queue = wait_queue
+                manufacture.creation_queue = creation_queue
+                session.db.commit()
+
+        session.close()
+
+    def get_wait_queue(self, user_id, product_id):
+        session = db_api.CreateSession()
+        manufacture: tables.Manufacture = session.db.query(
+            tables.Manufacture).filter_by(user_id=user_id).first()
+
+        wait_queue = list(manufacture.wait_queue)
+        player_products = list(manufacture.storage)
+        for queue in wait_queue:
+            time_left = self.get_left_time(queue["timer"])
+            added_products = []
+
+            if time_left[0] == 0:
+                added_products.append(queue)
+
+                products_id = []
+                for product in player_products:
+                    if product["product_id"] == product_id:
+                        new_product = {
+                            "product_id": product_id,
+                            "count": product["count"]+1
+                        }
+                        index = player_products.index(product)
+                        player_products.remove(product)
+                        player_products.insert(index, new_product)
+                    products_id.append(product["product_id"])
+
+                if product_id not in products_id:
+                    player_products.append({
+                            "product_id": product_id,
+                            "count": 1
+                        })
+                wait_queue.remove(queue)
+
+                manufacture.storage = player_products
+                manufacture.wait_queue = wait_queue
+                session.db.commit()
+
+        session.close()
+
+
+class HomeBuildingTimer(Timer):
     def get_build_timer(self, citizens_table, home_model):
         set_time = citizens_table.build_timer
         time_left = self.get_left_time(set_time)
@@ -139,6 +193,27 @@ class HomeBuildingsTimer(Timer):
             return 0, "сек."
         else:
             return time_left
+
+
+class CampaignTimer:
+    def get_capture_timer(self, user_id):
+        session = db_api.CreateSession()
+        campaign: tables.Campaign = session.db.query(
+            tables.Campaign).filter_by(user_id=user_id).first()
+        if not campaign.territory_captures:
+            return
+
+        time_left = Timer.get_left_time(campaign.territory_captures["timer"])
+        if time_left[0] == 0:
+            if campaign.territory_captures["win"]:
+                index = campaign.territory_captures["territory_index"]
+                territory_owners = list(campaign.territory_owners)
+                territory_owners[index] = True
+                campaign.territory_owners = territory_owners
+
+            campaign.territory_captures = {}
+
+        session.close()
 
 
 class UnitsTimer(Timer):
@@ -186,201 +261,49 @@ class UnitsTimer(Timer):
         units_table.creation_queue = creation_queue
         units_table.creation_timer = creation_timer
 
-    def get_create_timer(self, units_table):
-        creation_queue = list(units_table.creation_queue)
-        creation_timer = list(units_table.creation_timer)
-        unit_counts = list(units_table.unit_counts)
+    def get_creation_queue_timer(self, user_id):
+        session = db_api.CreateSession()
+        units: tables.Units = session.db.query(
+            tables.Units).filter_by(user_id=user_id).first()
 
-        for i in creation_timer:
-            time_left = self.get_left_time(i)
-            index = creation_timer.index(i)
+        base_units = ages.Age.get_all_units()
+        creation_queue = list(units.creation_queue)
+        units_count = list(units.units_count)
+        for queue in creation_queue:
+            queue_index = creation_queue.index(queue)
 
-            if time_left[0] == 0:
-                units_table.all_unit_counts += int(creation_queue[index])
-                unit_counts[index] += int(creation_queue[index])
+            unit_num = queue["unit_num"]
+            creation_count = queue["creation_count"]
+            unit = base_units[units.units_type[unit_num]]
+            time_left = self.get_left_time_sec(queue["timer"])
 
-                creation_timer[index] = 0
-                creation_queue[index] = 0
+            time_passed = self.get_time_passed_sec(
+                set_time_sec=unit.create_time_sec*creation_count,
+                time_left_sec=time_left
+            )
+            created_count = int(time_passed / unit.create_time_sec)
+            units_count[unit_num] += created_count
+            if created_count > 0:
+                units.real_units_count += unit.weight * created_count
 
-        units_table.creation_queue = creation_queue
-        units_table.creation_timer = creation_timer
-        units_table.unit_counts = unit_counts
+            units.units_count = units_count
 
+            creation_count -= created_count
+            queue["timer"] = self.set_timer(creation_count*unit.create_time_sec)
 
-class CitizenTimer(Timer):
+            if creation_count <= 0:
+                creation_queue.remove(queue)
+            else:
+                new_queue = {
+                    "unit_num": unit_num,
+                    "creation_count": creation_count,
+                    "timer": queue["timer"]
+                }
+                creation_queue.remove(queue)
+                creation_queue.insert(queue_index, new_queue)
+            units.creation_queue = creation_queue
 
-    @staticmethod
-    def set_create_timer(
-            citizens_table: tables.Citizens,
-            create_time_sec: int,
-            creation_count: int = 1):
-
-        time_left_sec = int(citizens_table.creation_timer - time.time())
-        if time_left_sec < 0:
-            time_left_sec = 0
-
-        set_time = int(time.time() + ((create_time_sec * creation_count) + time_left_sec))
-        citizens_table.creation_timer = set_time
-
-    @staticmethod
-    def get_create_timer(citizen_table: tables.Citizens):
-        time_left = Timer.get_left_time(citizen_table.creation_timer)
-
-        if time_left[0] == 0:
-            citizen_table.population += citizen_table.creation_queue
-
-            citizen_table.creation_queue = 0
-            citizen_table.creation_timer = 0
-
-        return time_left
+        session.close()
 
 
-class TerritoryTimer(Timer):
-
-    @staticmethod
-    def get_money_timer(territory_table: tables.Territory,
-                        indexes_owned_territory: list,
-                        models_territories: typing.List[models.Territory]) -> int:
-
-        set_time = territory_table.tax_timer
-
-        time_left = Timer.get_left_time(set_time)
-        income = 0
-
-        for index in indexes_owned_territory:
-            income += models_territories[index].tax
-
-        income_min = income / 60
-
-        time_passed = Timer.get_time_passed_min(time_left)
-        if time_passed <= 1:
-            money_income = 0
-        else:
-            money_income = int(time_passed * income_min)
-
-        new_set_time = Timer.set_timer(3600)
-        territory_table.tax_timer = new_set_time
-
-        return money_income
-
-    @staticmethod
-    def get_capture_timer(territory_table: tables.Territory):
-        time_left = Timer.get_left_time(territory_table.capture_timer)
-        owned_territory = list(territory_table.owned_territory)
-
-        if time_left[0] == 0:
-            if territory_table.capture_state == "win":
-                owned_territory[territory_table.capturing_index] = True
-                territory_table.owned_territory = owned_territory
-
-            territory_table.capturing_index = None
-            territory_table.capture_state = None
-            territory_table.capture_timer = 0
-
-        return time_left
-
-
-class FinanceTimer(Timer):
-    def get_money_timer(self, finance_table, citizen_table) -> int:
-        set_time = finance_table.money_timer
-
-        time_left = self.get_left_time(set_time)
-
-        spend = maths.Maths.subtract_percent(citizen_table.population, 70)
-        spend = random.randint(0, spend)
-        spend_min = (spend / 60)
-
-        time_passed = self.get_time_passed_min(time_left)
-        if time_passed <= 1:
-            spend = 0
-        else:
-            spend = int(time_passed * spend_min)
-
-        return spend
-
-    def get_culture_timer(self, finance_table, citizen_table) -> int:
-
-        spend_money = self.get_money_timer(finance_table, citizen_table)
-        finance_table.culture -= spend_money
-
-        if finance_table.culture > 0:
-            return 0
-
-        set_time = finance_table.sanction_timer
-        time_left = self.get_left_time(set_time)
-
-        if citizen_table.population < 80:
-            return 0
-
-        spend = maths.Maths.subtract_percent(citizen_table.population, 70)
-        spend = random.randint(0, spend)
-        spend_min = (spend / 60)
-
-        time_passed = self.get_time_passed_min(time_left)
-        if time_passed <= 1:
-            spend = 0
-        else:
-            spend = int(time_passed * spend_min)
-
-        time_set = self.set_timer(3600)
-        finance_table.sanction_timer = time_set
-        citizen_table.population -= spend
-
-    def get_economics_timer(self, finance_table, townhall_table, citizen_table) -> int:
-
-        spend_money = self.get_money_timer(finance_table, citizen_table)
-        finance_table.economics -= spend_money
-
-        if finance_table.economics > 0:
-            return 0
-
-        set_time = finance_table.sanction_timer
-        time_left = self.get_left_time(set_time)
-
-        if townhall_table.food < 50:
-            return 0
-
-        spend = maths.Maths.subtract_percent(townhall_table.food, 70)
-        spend = random.randint(0, spend)
-        spend_min = (spend / 60)
-
-        time_passed = self.get_time_passed_min(time_left)
-        if time_passed <= 1:
-            spend = 0
-        else:
-            spend = int(time_passed * spend_min)
-
-        time_set = self.set_timer(3600)
-        finance_table.sanction_timer = time_set
-        townhall_table.food -= spend
-
-    def get_army_timer(self, finance_table, units_table, citizen_table) -> int:
-
-        spend_money = self.get_money_timer(finance_table, citizen_table)
-        finance_table.army -= spend_money
-
-        if finance_table.army > 0:
-            return 0
-
-        set_time = finance_table.sanction_timer
-        time_left = self.get_left_time(set_time)
-
-        if units_table.all_unit_counts < 20:
-            return 0
-
-        spend = maths.Maths.subtract_percent(units_table.all_unit_counts, 70)
-        spend = random.randint(0, spend)
-        spend_min = (spend / 60)
-
-        time_passed = self.get_time_passed_min(time_left)
-        if time_passed <= 1:
-            spend = 0
-        else:
-            spend = int(time_passed * spend_min)
-
-        time_set = self.set_timer(3600)
-        finance_table.sanction_timer = time_set
-        units_table.all_unit_counts -= spend
-        unit_counts = list(units_table.unit_counts)
-        units_table.unit_counts = subtract_nums_list(spend, unit_counts)
 

@@ -3,7 +3,7 @@ import time
 from utils.classes import maths
 
 
-def fight(attack_army, defend_army):
+def fight(attack_army, defend_army) -> bool:
 
     data = {}
 
@@ -12,8 +12,8 @@ def fight(attack_army, defend_army):
         small_army = defend_army
 
         data.update({
-            "large": "attacker",
-            "small": "defender",
+            "large": True,
+            "small": False,
         })
 
     elif attack_army < defend_army:
@@ -21,16 +21,16 @@ def fight(attack_army, defend_army):
         small_army = attack_army
 
         data.update({
-            "large": "defender",
-            "small": "attacker",
+            "large": False,
+            "small": True,
         })
 
     else:
         random_num = random.choice([0, 1])
         if random_num == 1:
-            return "defender"
+            return False
         else:
-            return "attacker"
+            return True
 
     large_army_80 = maths.Maths.subtract_percent(large_army, 80)
     large_army_60 = maths.Maths.subtract_percent(large_army, 60)
@@ -70,9 +70,9 @@ def fight(attack_army, defend_army):
     else:
         random_num = random.choice([0, 1])
         if random_num == 1:
-            return "defender"
+            return False
         else:
-            return "attacker"
+            return True
 
 
 def riot(territory_owned, territory_units):

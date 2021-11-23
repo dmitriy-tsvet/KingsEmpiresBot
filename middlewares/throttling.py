@@ -13,7 +13,7 @@ class ThrottlingMiddleware(BaseMiddleware):
     Simple middleware
     """
 
-    def __init__(self, limit=0.1, key_prefix='antiflood_'):
+    def __init__(self, limit=1, key_prefix='antiflood_'):
         self.rate_limit = limit
         self.prefix = key_prefix
         super(ThrottlingMiddleware, self).__init__()

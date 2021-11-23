@@ -1,5 +1,5 @@
 from utils.db_api import tables, db_api
-from utils.ages import models, ages_list
+from utils.models import base, ages
 from aiogram import types
 
 
@@ -8,174 +8,80 @@ class TableSetter:
         self.user_id = user_id
 
     def set_stone_age(self, message: types.Message, country_name: str):
-        age: models.Age = ages_list.AgesList.get_age_model("Каменный")
         first_name = message.from_user.first_name
         last_name = message.from_user.last_name
         username = message.from_user.username
-        user_mention = message.from_user.get_mention()
-
-        units_empty_list = [
-            0 for i in range(0, len(age.units))
-        ]
-        units_levels_list = [
-            1 for i in range(0, len(age.units))
-        ]
-
-        territories_empty_list = [
-            False for i in range(0, len(age.territories))
-        ]
-
-        new_session = db_api.NewSession()
 
         user = tables.User(
             user_id=self.user_id, first_name=first_name,
             last_name=last_name, username=username,
         )
+        age = ages.Age.get("Каменный Век")
+        progress_tree = []
 
-        units = tables.Units(
-            user_id=self.user_id,
-            all_unit_counts=0,
-            unit_counts=units_empty_list,
-            creation_queue=units_empty_list,
-            creation_timer=units_empty_list,
-            creation_value=1,
-            levels=units_levels_list,
-            upgrade_timer=None,
-            unit_num=None
-        )
+        for branch in age.progress_tree:
+            new_branch = []
+            for tech in branch:
+                if tech is not None:
+                    tech = 0
+                new_branch.append(tech)
+            progress_tree.append(new_branch)
 
         townhall = tables.TownHall(
             user_id=self.user_id,
             country_name=country_name,
             age=age.name,
-            money=0,
-            timer=None,
-            food=0,
-            stock=0,
-            energy=0,
-            graviton=0
-        )
-
-        territory = tables.Territory(
-            user_id=self.user_id,
-            tax_timer=None,
-            capture_timer=None,
-            owned_territory=territories_empty_list,
-            capturing_index=None,
-            capture_state=None,
-        )
-
-        food_buildings = tables.FoodBuildings(
-            user_id=self.user_id,
-            count_buildings=1,
-            levels=[1, 0, 0, 0],
-            timer=None,
-            build_timer=None,
-            build_num=None
-        )
-
-        stock_buildings = tables.StockBuildings(
-            user_id=self.user_id,
-            count_buildings=1,
-            levels=[1, 0, 0, 0],
-            timer=None,
-            build_timer=None,
-            build_num=None
-        )
-
-        citizens = tables.Citizens(
-            user_id=self.user_id,
             population=100,
-            capacity=100,
-            creation_queue=0,
-            creation_timer=0,
-            home_counts=1,
-            build_timer=None,
-            build_num=None
+            money=200,
+            stock=200,
+            diamonds=100,
+            timer=None,
         )
-
-        finance = tables.Finance(
+        progress = tables.Progress(
             user_id=self.user_id,
-            culture=20,
-            economics=20,
-            army=20,
+            score=9,
+            score_timer=0,
+            tree=progress_tree,
+            unlocked_buildings=[]
         )
 
-        new_session.session.add(user)
-        new_session.session.add(units)
-        new_session.session.add(townhall)
-        new_session.session.add(territory)
-        new_session.session.add(food_buildings)
-        new_session.session.add(stock_buildings)
-        new_session.session.add(citizens)
-        new_session.session.add(finance)
+        trees = ["tree" for i in range(0, 19)]
+        buildings = tables.Buildings(
+            user_id=self.user_id,
+            buildings=[2, 0, 1, "tree", 2, "tree", None, *trees],
+            clan_building_lvl=0,
+            build_timer=[],
+            timer=None
+        )
+        manufacture = tables.Manufacture(
+            user_id=self.user_id,
+            storage=[],
+            creation_queue=[],
+            wait_queue=[]
+        )
 
-        new_session.close()
+        units = tables.Units(
+            user_id=self.user_id,
+            units_type=[None for i in range(0, 5)],
+            units_count=[0 for i in range(0, 5)],
+            real_units_count=0,
+            creation_queue=[]
+        )
 
-    def set_next_age(self, next_age: str):
+        campaign = tables.Campaign(
+            user_id=self.user_id,
+            territory_owned=[False for i in range(0, 20)],
+            territory_captures={}
+        )
 
-        age: models.Age = ages_list.AgesList.get_age_model(next_age)
+        session = db_api.CreateSession()
 
-        units_empty_list = [
-            0 for i in range(0, len(age.units))
-        ]
+        session.db.add(user)
+        session.db.add(townhall)
+        session.db.add(progress)
+        session.db.add(buildings)
+        session.db.add(manufacture)
+        session.db.add(units)
+        session.db.add(campaign)
 
-        territories_empty_list = [
-            False for i in range(0, len(age.territories))
-        ]
-
-        units_levels_list = [
-            1 for i in range(0, len(age.units))
-        ]
-
-        new_session = db_api.NewSession()
-
-        units_table: tables.Units = new_session.filter_by_user_id(
-            user_id=self.user_id, table=tables.Units)
-
-        units_table.all_unit_counts = 0
-        units_table.unit_counts = units_empty_list
-        units_table.creation_queue = units_empty_list
-        units_table.creation_timer = units_empty_list
-        units_table.levels = units_levels_list
-        units_table.creation_value = 1
-        units_table.upgrade_timer = None
-        units_table.upgrade_unit_num = None
-
-        townhall_table: tables.TownHall = new_session.filter_by_user_id(
-            user_id=self.user_id, table=tables.TownHall)
-        townhall_table.age = next_age
-
-        territory_table: tables.Territory = new_session.filter_by_user_id(
-            user_id=self.user_id, table=tables.Territory)
-
-        territory_table.tax_timer = None
-        territory_table.capture_timer = None
-        territory_table.owned_territory = territories_empty_list
-        territory_table.capturing_index = None
-        territory_table.capture_state = None
-
-        food_buildings_table: tables.FoodBuildings = new_session.filter_by_user_id(
-            user_id=self.user_id, table=tables.FoodBuildings)
-
-        food_buildings_table.count_buildings = 1
-        food_buildings_table.levels = [1, 0, 0, 0]
-        food_buildings_table.build_timer = None
-        food_buildings_table.build_num = None
-
-        stock_buildings_table: tables.StockBuildings = new_session.filter_by_user_id(
-            user_id=self.user_id, table=tables.StockBuildings)
-
-        stock_buildings_table.count_buildings = 1
-        stock_buildings_table.levels = [1, 0, 0, 0]
-        stock_buildings_table.build_timer = None
-        stock_buildings_table.build_num = None
-
-        citizens_table: tables.Citizens = new_session.filter_by_user_id(
-            user_id=self.user_id, table=tables.Citizens)
-
-        citizens_table.home_counts = 1
-        citizens_table.build_timer = None
-        citizens_table.build_num = None
-
-        new_session.close()
+        session.close()

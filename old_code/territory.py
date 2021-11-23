@@ -7,7 +7,7 @@ from aiogram.dispatcher.filters.builtin import IsReplyFilter, Regexp
 from utils.db_api.db_api2 import get_territory_table, update_table_data, get_townhall_table, update_json_column
 from utils.misc.timer import get_timer_end_war, get_timer_start_war, set_timer_end_war, \
     set_timer_start_war, set_timer_free_capture, get_time_left
-from keyboards.territory import *
+from keyboards.campaigns import *
 from states.territory import Territory
 from utils.misc.read_file import read_txt_file
 

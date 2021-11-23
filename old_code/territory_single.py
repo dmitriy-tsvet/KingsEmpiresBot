@@ -10,7 +10,7 @@ from aiogram.utils import exceptions
 
 from utils.db_api.db_api2 import get_territory_table, update_table_data, get_townhall_table, get_units_table
 from utils.misc.timer import set_capture_timer, get_time_left, get_tax_timer
-from keyboards.territory import *
+from keyboards.campaigns import *
 from states.territory import Territory
 from utils.misc.read_file import read_txt_file
 from utils.war_system import fight, riot

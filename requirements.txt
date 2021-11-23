@@ -1,4 +1,4 @@
-aiogram==2.13
+aiogram==2.14.3
 environs==9.2.0
 loguru==0.5.3
-sqlalchemy==1.4.22
+sqlalchemy==1.4.23

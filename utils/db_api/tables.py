@@ -21,12 +21,12 @@ class User(Base):
 
     townhall = relationship("TownHall", backref=backref("user", uselist=False))
     units = relationship("Units", backref=backref("user", uselist=False))
-    territory = relationship("Territory", backref=backref("user", uselist=False))
-    food_buildings = relationship("FoodBuildings", backref=backref("user", uselist=False))
-    stock_buildings = relationship("StockBuildings", backref=backref("user", uselist=False))
-    citizens = relationship("Citizens", backref=backref("user", uselist=False))
     market = relationship("Market", backref=backref("user", uselist=False))
-    finance = relationship("Finance", backref=backref("user", uselist=False))
+    clan = relationship("Clan", backref=backref("user", uselist=False))
+    clan_member = relationship("ClanMember", backref=backref("user", uselist=False))
+    clan_invitation = relationship("ClanInvitation", backref=backref("user", uselist=False))
+    progress = relationship("Progress", backref=backref("user", uselist=False))
+    manufacture = relationship("Manufacture", backref=backref("user", uselist=False))
 
 
 class TownHall(Base):
@@ -36,12 +36,42 @@ class TownHall(Base):
     user_id = Column(Integer, ForeignKey("user.user_id"))
     country_name = Column(String)
     age = Column(String)
+    population = Column(Integer)
     money = Column(Integer)
-    timer = Column(Integer)
-    food = Column(Integer)
     stock = Column(Integer)
-    energy = Column(Integer)
-    graviton = Column(Integer)
+    diamonds = Column(Integer)
+    timer = Column(Integer)
+
+
+class Buildings(Base):
+    __tablename__ = "buildings"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.user_id"))
+    buildings = Column(JsonDecorator)
+    clan_building_lvl = Column(Integer)
+    build_timer = Column(JsonDecorator)
+    timer = Column(Integer)
+
+
+class Progress(Base):
+    __tablename__ = "progress"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.user_id"))
+    score = Column(Integer)
+    score_timer = Column(Integer)
+    tree = Column(JsonDecorator)
+    unlocked_buildings = Column(JsonDecorator)
+
+
+class Manufacture(Base):
+    __tablename__ = "manufacture"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.user_id"))
+    storage = Column(JsonDecorator)
+    creation_queue = Column(JsonDecorator)
+    wait_queue = Column(JsonDecorator)
 
 
 class Units(Base):
@@ -49,70 +79,19 @@ class Units(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.user_id"))
-    all_unit_counts = Column(Integer)
-    unit_counts = Column(JsonDecorator)
+    units_type = Column(JsonDecorator)
+    units_count = Column(JsonDecorator)
+    real_units_count = Column(Integer)
     creation_queue = Column(JsonDecorator)
-    creation_timer = Column(JsonDecorator)
-    creation_value = Column(Integer)
-    levels = Column(JsonDecorator)
-    upgrade_timer = Column(Integer)
-    unit_num = Column(Integer)
 
 
-class Territory(Base):
-    __tablename__ = "territory"
+class Campaign(Base):
+    __tablename__ = "campaign"
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.user_id"))
-    tax_timer = Column(Integer)
-    capture_timer = Column(Integer)
-    owned_territory = Column(JsonDecorator)
-    capturing_index = Column(Integer)
-    capture_state = Column(String)
-
-
-class FoodBuildings(Base):
-    __tablename__ = "food_buildings"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.user_id"))
-    count_buildings = Column(Integer)
-    levels = Column(JsonDecorator)
-    timer = Column(Integer)
-    build_timer = Column(Integer)
-    build_num = Column(Integer)
-
-    def __str__(self):
-        return "food"
-
-
-class StockBuildings(Base):
-    __tablename__ = "stock_buildings"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.user_id"))
-    count_buildings = Column(Integer)
-    levels = Column(JsonDecorator)
-    timer = Column(Integer)
-    build_timer = Column(Integer)
-    build_num = Column(Integer)
-
-    def __str__(self):
-        return "stock"
-
-
-class Citizens(Base):
-    __tablename__ = "citizens"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.user_id"))
-    population = Column(Integer)
-    capacity = Column(Integer)
-    creation_queue = Column(Integer)
-    creation_timer = Column(Integer)
-    home_counts = Column(Integer)
-    build_timer = Column(Integer)
-    build_num = Column(Integer)
+    territory_owned = Column(JsonDecorator)
+    territory_captures = Column(JsonDecorator)
 
 
 class Market(Base):
@@ -126,16 +105,64 @@ class Market(Base):
     timer = Column(Integer)
 
 
-class Finance(Base):
-    __tablename__ = "finance"
+class Clan(Base):
+    __tablename__ = "clan"
+
+    clan_id = Column(Integer, primary_key=True)
+    name = Column(String)
+    description = Column(String)
+    rating = Column(Integer)
+    units = Column(Integer)
+    money = Column(Integer)
+    creator = Column(Integer, ForeignKey("user.user_id"))
+    contest_count = Column(Integer)
+    state = Column(String)
+
+    clan_member = relationship("ClanMember", backref="clan")
+    clan_invitation = relationship("ClanInvitation", backref="clan", uselist=False)
+
+
+class ClanMember(Base):
+    __tablename__ = "clan_member"
+
+    id = Column(Integer, primary_key=True)
+    clan_id = Column(Integer, ForeignKey("clan.clan_id"))
+    user_id = Column(Integer, ForeignKey("user.user_id"))
+    rank = Column(String)
+    clan_units = Column(Integer)
+    money_donate = Column(Integer)
+    units_donate = Column(Integer)
+
+
+class ClanInvitation(Base):
+    __tablename__ = "clan_invitation"
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.user_id"))
-    culture = Column(Integer)
-    economics = Column(Integer)
-    army = Column(Integer)
-    money_timer = Column(Integer)
-    sanction_timer = Column(Integer)
+    clan_id = Column(Integer, ForeignKey("clan.clan_id"))
+    timer = Column(Integer)
+
+    clan: Clan
+
+
+class Contest(Base):
+    __tablename__ = "contest"
+
+    id = Column(Integer, primary_key=True)
+    clan_id_1 = Column(Integer, ForeignKey("clan.clan_id"))
+    clan_id_2 = Column(Integer, ForeignKey("clan.clan_id"))
+    recent_log = Column(JsonDecorator)
+    log = Column(JsonDecorator)
+    state_timer = Column(Integer)
+    territory_names = Column(JsonDecorator)
+    territory_owners = Column(JsonDecorator)
+    territory_units = Column(JsonDecorator)
+    territory_captures = Column(JsonDecorator)
+    clans_rating = Column(JsonDecorator)
+    colors = Column(JsonDecorator)
+
+    clan_1 = relationship("Clan", foreign_keys=[clan_id_1])
+    clan_2 = relationship("Clan", foreign_keys=[clan_id_2])
 
 
 def create_session() -> Session:

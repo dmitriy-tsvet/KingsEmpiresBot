@@ -1,23 +1,7 @@
 from aiogram import types
 
-kb_buildings = types.InlineKeyboardMarkup()
+kb_build_info = types.InlineKeyboardMarkup()
 
-btn_home_buildings = types.InlineKeyboardButton(
-    text="🏡 жилье", callback_data="home_buildings"
-)
-btn_food_buildings = types.InlineKeyboardButton(
-    text="🍇 провизия", callback_data="food_buildings"
-)
-btn_stock_buildings = types.InlineKeyboardButton(
-    text="🌲 сырье", callback_data="stock_buildings"
-)
-btn_energy_buildings = types.InlineKeyboardButton(
-    text="⚡ энергия", callback_data="energy_buildings"
-)
-btn_graviton_buildings = types.InlineKeyboardButton(
-    text="🧬 гравитон", callback_data="graviton_buildings"
-)
-#
 # kb_buildings.add(btn_home_buildings)
 # kb_buildings.add(btn_food_buildings)
 # kb_buildings.add(btn_stock_buildings)
@@ -28,16 +12,41 @@ btn_back_buildings = types.InlineKeyboardButton(
     text="назад", callback_data="back_buildings"
 )
 
-kb_about_building = types.InlineKeyboardMarkup()
-btn_upgrade_building = types.InlineKeyboardButton(
-    text="▲ Уровень", callback_data="upgrade_building"
+btn_build = types.InlineKeyboardButton(
+    text="🔨 построить", callback_data="start_build"
 )
 
-btn_back_some_buildings = types.InlineKeyboardButton(
-    text="назад", callback_data="back_some_buildings"
+btn_question = types.InlineKeyboardButton(
+    text="?", callback_data="start_build"
 )
 
-kb_about_building.add(btn_upgrade_building)
-kb_about_building.add(btn_back_some_buildings)
+kb_build_info.add(btn_build)
+kb_build_info.add(btn_back_buildings)
+
+kb_back = types.InlineKeyboardMarkup()
+kb_back.add(btn_back_buildings)
+
+kb_tree = types.InlineKeyboardMarkup()
+
+btn_cut_down = types.InlineKeyboardButton(
+    text="🪓 срубить", callback_data="cut_down"
+)
+kb_tree.add(btn_cut_down)
+kb_tree.add(btn_back_buildings)
 
 
+kb_fix_clan_building = types.InlineKeyboardMarkup()
+btn_fix_clan_building = types.InlineKeyboardButton(
+    text="🔨🏚 Починить (5000 💰)", callback_data="fix_clan_building"
+)
+
+kb_fix_clan_building.add(btn_fix_clan_building)
+kb_fix_clan_building.add(btn_back_buildings)
+
+kb_upgrade_clan_building = types.InlineKeyboardMarkup()
+btn_upgrade_clan_building = types.InlineKeyboardButton(
+    text="🔨✨ Улучшить ()", callback_data="upgrade_clan_building"
+)
+
+kb_upgrade_clan_building.add(btn_upgrade_clan_building)
+kb_upgrade_clan_building.add(btn_back_buildings)

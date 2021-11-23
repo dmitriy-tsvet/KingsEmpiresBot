@@ -1,4 +1,4 @@
-from loader import dp
+from loader import dp, bot
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram import exceptions
@@ -6,8 +6,9 @@ from aiogram import exceptions
 from utils.misc.read_file import read_txt_file
 
 from utils.classes import kb_constructor, timer
+from utils.misc import regexps
 from utils.db_api import db_api, tables
-from utils.ages import models
+from utils.models import models, ages
 from utils.misc.operation_with_lists import subtract_nums_list, add_nums_list
 
 import states
@@ -20,47 +21,64 @@ async def market_handler(message: types.Message, state: FSMContext):
     keyboard = kb_constructor.PaginationKeyboard(
         user_id=user_id
     )
-    keyboard = keyboard.create_products_list_keyboard()
+    keyboard = keyboard.create_market_keyboard()
 
     msg_text = read_txt_file("text/market/list_products")
-    edit_msg = await message.answer(
+    market_msg = await message.answer(
         msg_text.format(1, keyboard[1]),
         reply_markup=keyboard[0]
     )
 
     await state.set_data({
-        "edit_msg": edit_msg
+        "user_id": user_id,
+        "market_msg": market_msg
     })
-    await states.Market.products_list.set()
 
 
-@dp.callback_query_handler(state=states.Market.products_list)
+@dp.callback_query_handler(regexp=regexps.Market.back)
+async def products_list_handler(callback: types.CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    user_id = callback.from_user.id
+
+    if data.get("user_id") != user_id:
+        msg_text = read_txt_file("text/hints/foreign_button")
+        return await callback.answer(text=msg_text)
+
+    market_msg: types.Message = data.get("market_msg")
+
+    if callback.data == "back_market":
+        await market_msg.edit_text(
+            text=market_msg.html_text,
+            reply_markup=market_msg.reply_markup,
+        )
+        # await states.Market.products_list.set()
+        return
+
+
+@dp.callback_query_handler(regexp=regexps.Market.menu)
 async def products_list_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
 
     user_id = callback.from_user.id
-    edit_msg: types.Message = data.get("edit_msg")
+
+    if data.get("user_id") != user_id:
+        msg_text = read_txt_file("text/hints/foreign_button")
+        return await callback.answer(msg_text)
+
+    market_msg: types.Message = data.get("market_msg")
 
     page_move = re.findall(r"page_(\d+)", callback.data)
-    select_product = re.findall(r"product_(\d+)", callback.data)
-
-    if callback.data == "back_products_list":
-        await data["edit_msg"].edit_text(
-            text=data["edit_msg"].html_text,
-            reply_markup=data["edit_msg"].reply_markup,
-        )
-        await states.Market.products_list.set()
-        return
+    select_product = re.findall(r"market_product_(\d+)", callback.data)
 
     if page_move:
         keyboard = kb_constructor.PaginationKeyboard(
             user_id=user_id
         )
         page = int(page_move[0])
-        keyboard = keyboard.create_products_list_keyboard(page)
+        keyboard = keyboard.create_market_keyboard(page)
         try:
             msg_text = read_txt_file("text/market/list_products")
-            await edit_msg.edit_text(
+            await market_msg.edit_text(
                 text=msg_text.format(page+1, keyboard[1]),
                 reply_markup=keyboard[0]
             )
@@ -70,14 +88,14 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
     elif select_product:
         product_id = int(select_product[0])
 
-        new_session = db_api.NewSession()
-        product: tables.Market = new_session.session.query(tables.Market).filter_by(
+        session = db_api.CreateSession()
+        product: tables.Market = session.db.query(tables.Market).filter_by(
             id=product_id
         ).first()
         if product is None:
             return await callback.answer("Этот товар уже кто-то купил.")
 
-        user_table: tables.User = new_session.filter_by_user_id(
+        user_table: tables.User = session.filter_by_user_id(
             user_id=product.user_id,
             table=tables.User
         )
@@ -90,7 +108,7 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
         time_left = timer.Timer.get_left_time(product.timer)
 
         msg_text = read_txt_file("text/market/about_product")
-        await edit_msg.edit_text(
+        await market_msg.edit_text(
             text=msg_text.format(
                 product.count,
                 product.product,
@@ -103,7 +121,7 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
         await state.update_data({
             "product_id": product_id,
         })
-        await states.Market.current_product.set()
+        session.close()
 
     elif callback.data == "my_products":
         keyboard = kb_constructor.PaginationKeyboard(
@@ -112,7 +130,7 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
         keyboard = keyboard.create_user_products_keyboard()
 
         msg_text = read_txt_file("text/market/user_products")
-        await edit_msg.edit_text(
+        await market_msg.edit_text(
             text=msg_text,
             reply_markup=keyboard
         )
@@ -120,86 +138,98 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
     await callback.answer()
 
 
-@dp.callback_query_handler(state=states.Market.current_product)
+@dp.callback_query_handler(regexp=regexps.Market.current_product)
 async def products_list_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     product_id = data.get("product_id")
 
+    market_msg: types.Message = data.get("market_msg")
     if callback.data == "back_products_list":
-        await data["edit_msg"].edit_text(
-            text=data["edit_msg"].html_text,
-            reply_markup=data["edit_msg"].reply_markup,
+        await market_msg.edit_text(
+            text=market_msg.html_text,
+            reply_markup=market_msg.reply_markup,
         )
-        await states.Market.products_list.set()
+        # await states.Market.products_list.set()
         return
-    new_session = db_api.NewSession()
-    product: tables.Market = new_session.session.query(tables.Market).filter_by(
+    session = db_api.CreateSession()
+    sell_product: tables.Market = session.db.query(tables.Market).filter_by(
         id=product_id
     ).first()
 
-    buyer_townhall_table: tables.TownHall = new_session.filter_by_user_id(
-        user_id=user_id,
-        table=tables.TownHall
-    )
+    seller_townhall_table: tables.TownHall = session.db.query(
+        tables.TownHall).filter_by(user_id=sell_product.user_id).first()
 
-    seller_townhall_table: tables.TownHall = new_session.filter_by_user_id(
-        user_id=product.user_id,
-        table=tables.TownHall
-    )
+    buyer_townhall_table: tables.TownHall = session.db.query(
+        tables.TownHall).filter_by(user_id=user_id).first()
 
-    seller_units_table: tables.Units = new_session.filter_by_user_id(
-        user_id=product.user_id,
-        table=tables.Units
-    )
+    seller_manufacture_table: tables.Manufacture = session.db.query(
+        tables.Manufacture).filter_by(user_id=sell_product.user_id).first()
 
-    buyer_units_table: tables.Units = new_session.filter_by_user_id(
-        user_id=user_id,
-        table=tables.Units
-    )
+    buyer_manufacture_table: tables.Manufacture = session.db.query(
+        tables.Manufacture).filter_by(user_id=user_id).first()
 
+    base_products = ages.Age.get_all_products()
+    base_products = [i.name for i in base_products]
 
     if callback.data == "buy_product":
-        if product is None:
+        if sell_product is None:
             await callback.answer("упс, кто-то уже купил")
 
             keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)
-            keyboard = keyboard.create_products_list_keyboard()
-            await data["edit_msg"].edit_text(
-                text=data["edit_msg"].html_text,
+            keyboard = keyboard.create_market_keyboard()
+            await market_msg.edit_text(
+                text=market_msg.html_text,
                 reply_markup=keyboard[0],
             )
 
-            return new_session.close()
+            return session.close()
 
-        if buyer_townhall_table.money >= product.price:
+        if buyer_townhall_table.money >= sell_product.price:
 
-            buyer_townhall_table.money -= product.price
-            seller_townhall_table.money += product.price
+            buyer_townhall_table.money -= sell_product.price
+            seller_townhall_table.money += sell_product.price
 
-            if product.product == "🍇":
-                buyer_townhall_table.food += product.count
-            elif product.product == "🌲":
-                buyer_townhall_table.stock += product.count
-            elif product.product == "💂":
-                buyer_units_table.all_unit_counts += product.count
+            base_sell_product_id = base_products.index(sell_product.product)
+            buyer_manufacture_table_storage = list(buyer_manufacture_table.storage)
 
-                units_count = list(buyer_units_table.unit_counts)
-                buyer_units_table.unit_counts = add_nums_list(
-                    product.count, units_count
+            buyer_products_id = [
+                product["product_id"] for product in buyer_manufacture_table_storage
+            ]
+
+            for product in buyer_manufacture_table_storage:
+                index = buyer_manufacture_table_storage.index(product)
+                if product["product_id"] == base_sell_product_id:
+                    product["count"] += sell_product.count
+                    buyer_manufacture_table_storage[index] = {
+                        "product_id": product["product_id"],
+                        "count": product["count"]
+                    }
+
+            if base_sell_product_id not in buyer_products_id:
+                buyer_manufacture_table_storage.append(
+                    {
+                        "product_id": base_sell_product_id,
+                        "count": sell_product.count
+                    }
                 )
+            buyer_manufacture_table.storage = buyer_manufacture_table_storage
 
-            new_session.session.query(tables.Market).filter_by(id=product_id).delete()
-            new_session.session.commit()
+            session.db.query(tables.Market).filter_by(id=product_id).delete()
+            session.db.commit()
 
             keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)
-            keyboard = keyboard.create_products_list_keyboard()
-            await data["edit_msg"].edit_text(
-                text=data["edit_msg"].html_text,
+            keyboard = keyboard.create_market_keyboard()
+            await market_msg.edit_text(
+                text=market_msg.html_text,
                 reply_markup=keyboard[0],
             )
-            await callback.answer("-{} 💰".format(product.price))
-            await states.Market.products_list.set()
+            await bot.send_message(
+                chat_id=seller_townhall_table.user_id,
+                text="🌟 Ваш товар <b>x{} {}</b>, купили за {} 💰.".format(
+                    sell_product.count, sell_product.product, sell_product.price
+                )
+            )
 
         else:
             msg_text = read_txt_file("text/hints/few_money")
@@ -208,42 +238,54 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
             )
 
     elif callback.data == "delete_product":
-        if product is None:
+        if sell_product is None:
             keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)
-            keyboard = keyboard.create_products_list_keyboard()
-            await data["edit_msg"].edit_text(
-                text=data["edit_msg"].html_text,
+            keyboard = keyboard.create_market_keyboard()
+            await market_msg.edit_text(
+                text=market_msg.html_text,
                 reply_markup=keyboard[0],
             )
             await callback.answer("упс, кто-то уже купил")
-            await states.Market.products_list.set()
-            return new_session.close()
+            # await states.Market.products_list.set()
+            return session.close()
 
-        if product.product == "🍇":
-            seller_townhall_table.food += product.count
-        elif product.product == "🌲":
-            seller_townhall_table.stock += product.count
-        elif product.product == "units":
-            seller_townhall_table.all_unit_counts += product.count
+        seller_manufacture_table_storage = list(seller_manufacture_table.storage)
+        base_sell_product_id = base_products.index(sell_product.product)
 
-            units_count = list(seller_townhall_table.unit_counts)
-            seller_townhall_table.unit_counts = add_nums_list(
-                product.count, units_count
+        seller_products_id = [
+            product["product_id"] for product in seller_manufacture_table_storage
+        ]
+
+        for product in seller_manufacture_table_storage:
+            index = seller_manufacture_table_storage.index(product)
+            if product["product_id"] == base_sell_product_id:
+                product["count"] += sell_product.count
+                seller_manufacture_table_storage[index] = {
+                    "product_id": product["product_id"],
+                    "count": product["count"]
+                }
+
+        if base_sell_product_id not in seller_products_id:
+            seller_manufacture_table_storage.append(
+                {
+                    "product_id": base_sell_product_id,
+                    "count": sell_product.count
+                }
             )
-        
-        # delete all
-        new_session.session.query(tables.Market).filter_by(
+
+        seller_manufacture_table.storage = seller_manufacture_table_storage
+
+        session.db.query(tables.Market).filter_by(
             id=product_id).delete()
-        new_session.session.commit()
+        session.db.commit()
 
         keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)
-        keyboard = keyboard.create_products_list_keyboard()
-        await data["edit_msg"].edit_text(
-            text=data["edit_msg"].html_text,
+        keyboard = keyboard.create_market_keyboard()
+        await market_msg.edit_text(
+            text=market_msg.html_text,
             reply_markup=keyboard[0],
         )
-        await callback.answer("-{} 💰".format(product.price))
-        await states.Market.products_list.set()
 
-    new_session.close()
+    await callback.answer()
+    session.close()
 

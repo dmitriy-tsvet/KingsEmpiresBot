@@ -10,4 +10,5 @@ from data import config
 
 @dp.message_handler(state="*", commands="start")
 async def handler_private_start(message: types.Message, state: FSMContext):
-    print(message.chat.id)
+    pass
+    # print(message.chat.id)

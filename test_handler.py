@@ -1,18 +1,22 @@
 from utils.db_api import tables, db_api
-from utils.ages import models
+from utils.models import models
 import json
 import typing
 import random
+import re
+from sqlalchemy import desc, asc, or_
 
+current_session = db_api.CreateSession()
 
-if __name__ == "__main__":
+buildings: tables.Buildings = current_session.db.query(
+    tables.Buildings).filter_by(user_id=615311497).first()
 
-    session = db_api.NewSession()
+player_buildings = list(buildings.buildings[0])
 
-    session.session.query(tables.Citizens).all()
+player_buildings[1] = 1
 
+buildings.buildings = [player_buildings]
 
-    session.close()
-
+current_session.close()
 
 

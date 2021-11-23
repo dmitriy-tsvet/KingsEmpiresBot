@@ -15,8 +15,8 @@ async def errors_handler(update, exception):
     # if isinstance(exception, exception.CantDemoteChatCreator):
     #     return True
     #
-    # if isinstance(exception, exception.MessageNotModified):
-    #     return True
+    if isinstance(exception, exceptions.MessageNotModified):
+        return True
     # if isinstance(exception, exception.MessageCantBeDeleted):
     #     return True
     #
