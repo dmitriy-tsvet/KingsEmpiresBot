@@ -6,6 +6,7 @@ from utils.models import models, base
 
 stone_militia = base.Unit(
     name="🪨 Ополченец",
+    type_unit="Легкий юнит",
     damage=7,
     armor=7,
     create_price=[10, 10],
@@ -18,6 +19,7 @@ stone_militia = base.Unit(
 
 bronze_swordsman = base.Unit(
     name="🗡 Мечник",
+    type_unit="Легкий юнит",
     damage=9,
     armor=9,
     create_price=[25, 25],
@@ -27,6 +29,7 @@ bronze_swordsman = base.Unit(
 
 bronze_archer = base.Unit(
     name="🏹 Лучник",
+    type_unit="Стрелок",
     damage=10,
     armor=4,
     create_price=[30, 5],

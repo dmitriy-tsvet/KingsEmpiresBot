@@ -76,6 +76,7 @@ async def callback_handler2(callback: types.CallbackQuery, state: FSMContext):
         text=msg_text,
         reply_markup=keyboard
     )
+    await callback.answer()
 
 
 @dp.callback_query_handler(regexp=ManufactureRegexp.menu)

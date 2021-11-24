@@ -41,6 +41,10 @@ btn_back_townhall = types.InlineKeyboardButton(
     text="назад", callback_data="back_townhall"
 )
 
+btn_back_progress = types.InlineKeyboardButton(
+    text="назад", callback_data="back_progress"
+)
+
 btn_next_age = types.InlineKeyboardButton(
     text="🌟 Бронзовый Век", callback_data="unlock_age"
 )

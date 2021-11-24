@@ -53,7 +53,6 @@ class CheckUserRegistration(BaseMiddleware):
             msg_text = read_txt_file("text/reg")
 
             if data.get("reply").html_text == msg_text:
-                print(1)
                 data["middleware_data"] = data.get("reply").message_id
             else:
                 raise CancelHandler()

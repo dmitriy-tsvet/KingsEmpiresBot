@@ -1,6 +1,7 @@
 import states
 import re
 import json
+import time
 
 from loader import dp
 from data import config
@@ -76,6 +77,7 @@ async def back_units_handler(callback: types.CallbackQuery, state: FSMContext):
             text=unit_msg.html_text,
             reply_markup=keyboard,
         )
+    await callback.answer()
 
 
 @dp.callback_query_handler(regexp=r"unit_(\d+)")
@@ -100,23 +102,23 @@ async def reply_menu_handler(callback: types.CallbackQuery, state: FSMContext):
         await unit_msg.edit_text(
             text=msg_text.format(
                 unit.name,
+                unit.type_unit,
                 unit.damage,
-                unit.armor
+                unit.armor,
+                transaction.Purchase.get_price(unit.create_price),
+                *timer.Timer.get_left_time_min(unit.create_time_sec)
             ),
             reply_markup=keyboard
         )
 
     session.close()
+    await callback.answer()
 
 
 @dp.message_handler(IsReplyFilter(True), regexp=r"(сделать|создать)\s+(\d+)\s+(\d+)")
 async def reply_menu_handler(message: types.Message, state: FSMContext):
     data = await state.get_data()
     user_id = message.from_user.id
-
-    if data.get("user_id") != user_id:
-        msg_text = read_txt_file("text/hints/foreign_button")
-        return await callback.answer(msg_text)
 
     unit_msg: types.Message = data.get("unit_msg")
 

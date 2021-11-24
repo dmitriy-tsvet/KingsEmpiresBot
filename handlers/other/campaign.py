@@ -100,6 +100,7 @@ async def back_handler(callback: types.CallbackQuery, state: FSMContext):
         disable_web_page_preview=True
 
     )
+    await callback.answer()
     session.close()
 
 

@@ -45,8 +45,12 @@ class Timer:
         return time_left_sec
 
     @staticmethod
+    def get_left_time_min(set_time_sec: int) -> tuple:
+        time_left = Timer.get_left_time(int(time.time() + set_time_sec))
+        return time_left
+
+    @staticmethod
     def get_time_passed_sec(set_time_sec, time_left_sec: int) -> int:
-        print(set_time_sec, time_left_sec)
         return set_time_sec - time_left_sec
 
     @staticmethod

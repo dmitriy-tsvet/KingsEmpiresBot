@@ -370,7 +370,7 @@ class StandardKeyboard(BaseKeyboard):
                 keyboards.townhall.btn_one_progress, keyboards.townhall.btn_all_progress,
             )
 
-        keyboard.add(keyboards.townhall.btn_back_townhall)
+        keyboard.add(keyboards.townhall.btn_back_progress)
         session.close()
         return keyboard
 

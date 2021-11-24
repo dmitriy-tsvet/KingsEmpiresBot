@@ -147,6 +147,7 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
             text=contest_msg.html_text,
             reply_markup=contest_msg.reply_markup,
         )
+    await callback.answer()
 
 
 @dp.callback_query_handler(state="*", regexp=ContestRegexp.capture)

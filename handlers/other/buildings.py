@@ -23,13 +23,13 @@ import keyboards
 async def buildings_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
-    new_session = db_api.CreateSession()
+    session = db_api.CreateSession()
 
     # tables data
-    townhall: tables.TownHall = new_session.filter_by_user_id(
+    townhall: tables.TownHall = session.filter_by_user_id(
         user_id=user_id, table=tables.TownHall)
 
-    buildings: tables.Buildings = new_session.filter_by_user_id(
+    buildings: tables.Buildings = session.filter_by_user_id(
         user_id=user_id, table=tables.Buildings)
 
     timer.BuildingTimer().get_build_timer(user_id=user_id)
@@ -41,15 +41,15 @@ async def buildings_handler(message: types.Message, state: FSMContext):
     # with open("data/img/buildings/{}.webp".format(building_img), 'rb') as sticker:
     #     await message.answer_sticker(sticker=sticker)
 
+    msg_text = read_txt_file("text/buildings/buildings")
     buildings_msg = await message.answer(
-        text="<b>Здания </b>\n\n"
-             "<i>Прокачивайте здания,\n"
-             "для более высокой\n"
-             "производительности.</i>",
+        text=msg_text.format(
+            buildings.buildings.count(0)-len(buildings.build_timer),
+            buildings.buildings.count(0)),
         reply_markup=keyboard
     )
 
-    new_session.close()
+    session.close()
 
     await state.update_data({
         "user_id": user_id,
@@ -75,6 +75,7 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
             text=buildings_msg.html_text,
             reply_markup=keyboard,
         )
+    await callback.answer()
 
 
 @dp.callback_query_handler(regexp=BuildingsRegexp.building)
@@ -185,6 +186,7 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
                         ),
                         reply_markup=keyboard
                     )
+
             else:
                 msg_text = read_txt_file("text/buildings/builder_home")
                 await buildings_msg.edit_text(
@@ -196,27 +198,48 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
         build_num = int(build_info[0])
         if data.get("build_pos") is None:
             return
-        msg_text = read_txt_file("text/buildings/build_info")
-        time_build = timer.Timer.set_timer(base_buildings[build_num].create_time_sec)
-        build_price = transaction.Purchase.get_price(base_buildings[build_num].create_price)
+        building = base_buildings[build_num]
 
-        if type(base_buildings[build_num]) in (base.StockBuilding, base.ManufactureBuilding):
-            msg_text = read_txt_file("text/buildings/build_info_2")
+        build_time = timer.Timer.get_left_time_min(building.create_time_sec)
+        build_price = transaction.Purchase.get_price(building.create_price)
+
+        if type(building) is base.ManufactureBuilding:
+            text = ""
+            for i in building.products:
+                if building.products.index(i) == len(building.products)-1:
+                    text += "<i>{}</i>".format(i.name)
+                    break
+                text += "<i>{} / </i>".format(i.name)
+
+            msg_text = read_txt_file("text/buildings/pre_build_manufacture")
             await buildings_msg.edit_text(
                 text=msg_text.format(
-                    base_buildings[build_num].name,
-                    base_buildings[build_num],
-                    build_price,
-                    base_buildings[build_num].manpower,
-                    *timer.Timer.get_left_time(time_build)),
+                    building.name, building, text, build_price, building.manpower, *build_time),
+                reply_markup=keyboards.buildings.kb_build_info)
+
+        elif type(building) is base.StockBuilding:
+            msg_text = read_txt_file("text/buildings/pre_build_stock")
+            await buildings_msg.edit_text(
+                text=msg_text.format(
+                    building.name, building, building.efficiency, build_price, building.manpower, *build_time),
+                reply_markup=keyboards.buildings.kb_build_info)
+
+        elif type(building) is base.HomeBuilding:
+            msg_text = read_txt_file("text/buildings/pre_build_home")
+            await buildings_msg.edit_text(
+                text=msg_text.format(
+                    building.name, building, building.capacity, building.income, build_price, *build_time),
                 reply_markup=keyboards.buildings.kb_build_info)
         else:
+            create_price = building.create_price
+            if type(building) is base.BuilderHome:
+                create_price = [i*buildings.buildings.count(0) for i in create_price]
+
+            create_price = transaction.Purchase.get_price(create_price)
+            msg_text = read_txt_file("text/buildings/pre_build")
             await buildings_msg.edit_text(
                 text=msg_text.format(
-                    base_buildings[build_num].name,
-                    base_buildings[build_num],
-                    build_price,
-                    *timer.Timer.get_left_time(time_build)),
+                    building.name, building, create_price, *build_time),
                 reply_markup=keyboards.buildings.kb_build_info)
 
         await state.update_data({
@@ -235,15 +258,19 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
 
         build_num = int(data.get("build_num"))
         build_pos = int(data.get("build_pos"))
+        building = base_buildings[build_num]
+        create_price = building.create_price
+        if type(building) is base.BuilderHome:
+            create_price *= buildings.buildings.count(0)
 
         buying = transaction.Purchase.buy(
-            price=base_buildings[build_num].create_price,
+            price=create_price,
             townhall=townhall
         )
 
         if not buying:
             price = transaction.Purchase.get_dynamic_price(
-                price=base_buildings[build_num].create_price,
+                price=create_price,
                 townhall=townhall
             )
             msg_text = read_txt_file("text/hints/few_money")
@@ -279,11 +306,14 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
 
             keyboard = kb_constructor.PaginationKeyboard(
                 user_id=user_id).create_buildings_keyboard()
-
+            msg_text = read_txt_file("text/buildings/buildings")
             await buildings_msg.edit_text(
-                text="Постройки",
+                text=msg_text.format(
+                    buildings.buildings.count(0) - len(buildings.build_timer),
+                    buildings.buildings.count(0)),
                 reply_markup=keyboard
             )
+
         else:
             await callback.answer("Все строители заняты.")
 
@@ -462,10 +492,14 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
             keyboard = kb_constructor.PaginationKeyboard(
                 user_id=user_id).create_buildings_keyboard()
 
+            msg_text = read_txt_file("text/buildings/buildings")
             await buildings_msg.edit_text(
-                text="Постройки",
+                text=msg_text.format(
+                    buildings.buildings.count(0) - len(buildings.build_timer),
+                    buildings.buildings.count(0)),
                 reply_markup=keyboard
             )
+
         else:
             await callback.answer("Все строители заняты.")
             session.close()

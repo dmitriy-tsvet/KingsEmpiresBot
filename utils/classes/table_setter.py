@@ -42,7 +42,7 @@ class TableSetter:
             score=9,
             score_timer=0,
             tree=progress_tree,
-            unlocked_buildings=[]
+            unlocked_buildings=[0]
         )
 
         trees = ["tree" for i in range(0, 19)]

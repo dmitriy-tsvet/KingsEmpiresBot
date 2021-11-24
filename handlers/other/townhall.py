@@ -54,6 +54,14 @@ async def townhall_command_handler(message: types.Message, state: FSMContext):
     if progress.score < 10:
         progress.score += progress_score
 
+    base_buildings = ages.Age.get_all_buildings()
+    all_population = 0
+    for building_num in buildings.buildings:
+        if type(building_num) is int:
+            building = base_buildings[building_num]
+            if type(building) is base.HomeBuilding:
+                all_population += building.capacity
+
     keyboard = kb_constructor.StandardKeyboard(
         user_id=user_id).create_townhall_keyboard()
 
@@ -65,6 +73,7 @@ async def townhall_command_handler(message: types.Message, state: FSMContext):
             townhall.country_name,
             townhall.age,
             townhall.population,
+            all_population,
             user_clan,
             user_mention),
         reply_markup=keyboard
@@ -94,7 +103,27 @@ async def townhall_back_handler(callback: types.CallbackQuery, state: FSMContext
             text=townhall_msg.html_text,
             reply_markup=townhall_msg.reply_markup,
         )
-        return
+
+    if callback.data == "back_progress":
+        session = db_api.CreateSession()
+
+        townhall: tables.TownHall = session.db.query(
+            tables.TownHall).filter_by(user_id=user_id).first()
+        progress: tables.Progress = session.db.query(
+            tables.Progress).filter_by(user_id=user_id).first()
+        all_ages = ages.Age.get_all_ages()
+        age_index = all_ages.index(townhall.age)
+
+        keyboard = kb_constructor.PaginationKeyboard(
+            user_id=user_id).create_progress_keyboard(age_index)
+
+        msg_text = read_txt_file("text/townhall/progress")
+        await townhall_msg.edit_text(
+            text=msg_text.format(progress.score),
+            reply_markup=keyboard
+        )
+        session.close()
+    await callback.answer()
 
 
 @dp.callback_query_handler(regexp=TownhallRegexp.menu)
@@ -158,6 +187,7 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
         buildings.timer = timer.Timer.set_timer(3600)
         await callback.answer("+ {} ⚒".format(current_income), show_alert=False)
 
+    await callback.answer()
     session.close()
 
 
@@ -192,7 +222,7 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
             if product["product_id"] == product_id:
                 new_product = {
                     "product_id": product_id,
-                    "count": product["count"]-1
+                    "count": product["count"] - 1
                 }
                 stock_income = base_product.income
                 townhall.stock += stock_income
@@ -220,6 +250,7 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
 
         await callback.answer("+{} ⚒".format(stock_income))
 
+    await callback.answer()
     session.close()
 
 
@@ -274,11 +305,22 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
 
         msg_text = read_txt_file("text/townhall/technology")
         unlock_price = transaction.Purchase.get_price(technology.unlock_price)
+        unlocked_score = progress.tree[branch_index][technology_index]
+
+        if progress.tree[branch_index][technology_index] > technology.unlock_score:
+            unlocked_score = progress.tree[branch_index][technology_index] - 1
+
+        if unlock_price != "":
+            unlock_price = \
+                "⋯⋯⋯⋯⋯⋯⋯⋯⋯\n" \
+                "Стоимость открытия:\n" \
+                "<b>{}</b>".format(unlock_price)
+
         await townhall_msg.edit_text(
             text=msg_text.format(
                 technology.name,
                 str(technology.unlock_technology),
-                progress.tree[branch_index][technology_index],
+                unlocked_score,
                 technology.unlock_score,
                 unlock_price
             ),
@@ -317,7 +359,7 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
             session.close()
             return
 
-        previous_branch_index = branch_index-1
+        previous_branch_index = branch_index - 1
 
         user_previous_branch = []
         base_previous_branch = []
@@ -380,7 +422,7 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
                 unlock_price
             ),
             reply_markup=keyboard
-         )
+        )
 
     # unlock all
     elif callback.data == "upgrade_all":
@@ -441,7 +483,6 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
                     elif i == user_previous_branch[index]:
                         coincidences.append(None)
             else:
-                print(technology_index, user_previous_branch, base_previous_branch)
                 if user_previous_branch[technology_index] == base_previous_branch[technology_index]:
                     coincidences.append(None)
 
@@ -553,7 +594,7 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
 
     elif callback.data == "unlock_age":
         branch_index = len(progress.tree)
-        previous_branch_index = branch_index-1
+        previous_branch_index = branch_index - 1
 
         user_previous_branch = []
         base_previous_branch = []
@@ -588,7 +629,7 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
         await callback.message.answer("🌟")
         msg_text = read_txt_file("text/townhall/next_age")
         list_ages = ages.Age.get_all_ages()
-        next_age_name = list_ages[list_ages.index(townhall.age)+1]
+        next_age_name = list_ages[list_ages.index(townhall.age) + 1]
         townhall.age = next_age_name
         base_age = ages.Age.get(townhall.age)
 
@@ -619,8 +660,3 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
 
     await callback.answer()
     session.close()
-
-
-
-
-

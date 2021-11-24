@@ -39,13 +39,13 @@ class ManufactureBuilding:
 
 
 class BuilderHome:
-    def __init__(self, name: str, create_price: int, create_time_sec: int):
+    def __init__(self, name: str, create_price: list, create_time_sec: int):
         self.name = name
         self.create_price = create_price
         self.create_time_sec = create_time_sec
 
     def __str__(self):
-        return "Хижина строителя"
+        return "Уникальное здание"
 
 
 class HomeBuilding:
@@ -76,10 +76,11 @@ class ClanBuilding:
 
 
 class Unit:
-    def __init__(self, name: str, damage: int, armor: int,
+    def __init__(self, name: str, type_unit: str, damage: int, armor: int,
                  create_price: list, create_time_sec: int
                  ):
         self.name = name
+        self.type_unit = type_unit
         self.damage = damage
         self.armor = armor
         self.weight = int((damage + armor) / 3)

@@ -4,7 +4,7 @@ class TownhallRegexp:
     menu = r"progress|storage|get_money|get_stock"
     progress = r"technology_(\d+)_(\d+)|upgrade_one|upgrade_all|unlock_tech|unlock_age|tree_page_(\d+)"
     storage = r"my_product_(\d+)"
-    back = r"back_townhall"
+    back = r"back_townhall|back_progress"
 
 
 class ClanRegexp:

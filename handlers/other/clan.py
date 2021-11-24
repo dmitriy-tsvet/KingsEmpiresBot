@@ -90,6 +90,7 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
         text=clan_msg.html_text,
         reply_markup=clan_msg.reply_markup,
     )
+    await callback.answer()
 
 
 @dp.callback_query_handler(state="*", regexp=ClanRegexp.without_clan)

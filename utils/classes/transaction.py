@@ -50,7 +50,6 @@ class Purchase:
         emoji = ["💰, ", "⚒", "💎"]
 
         price = fill_in_list(price)
-
         for i in range(0, 3):
             if price[i] != 0:
 
