@@ -2,7 +2,7 @@ import keyboards
 from utils.models import ages, base
 from aiogram import types
 from utils.db_api import db_api, tables
-from utils.models import models, clan_building
+from utils.models import clan_building
 from utils.classes import timer, hour_income, transaction
 import copy
 import re
@@ -97,23 +97,26 @@ class StandardKeyboard(BaseKeyboard):
         if clan_member.rank in ("Лидер", "Заместитель"):
             keyboard.add(keyboards.clan.btn_war)
 
-        if clan_member.clan_units == \
-                buildings.clan_building_lvl*clan_building.clan_building.capacity:
-            btn_get_units = types.InlineKeyboardButton(
-                text="💂 {} / {}".format(clan_member.clan_units, clan_member.clan_units),
-                callback_data="None"
-            )
-        elif clan_member.clan_units > 0:
-            btn_get_units = types.InlineKeyboardButton(
-                text="💂 {} / {}".format(
-                    clan_member.clan_units,
-                    buildings.clan_building_lvl*clan_building.clan_building.capacity
-                ),
-                callback_data="get_clan_units"
-            )
+        time_left = timer.Timer.get_left_time(clan_member.donate_timer)
+        if time_left[0] == 0:
+            if clan_member.clan_units > 0:
+                btn_get_units = types.InlineKeyboardButton(
+                    text="💂 {} / {}".format(
+                        clan_member.clan_units,
+                        buildings.clan_building_lvl * clan_building.clan_building.capacity
+                    ),
+                    callback_data="get_clan_units"
+                )
+            else:
+                btn_get_units = types.InlineKeyboardButton(
+                    text="🏹 Запросить Воинов", callback_data="get_clan_units"
+                )
         else:
             btn_get_units = types.InlineKeyboardButton(
-                text="🏹 Запросить Воинов", callback_data="get_clan_units"
+                text="🕜 {} {}".format(
+                    *time_left
+                ),
+                callback_data="None"
             )
 
         keyboard.add(btn_get_units)
@@ -136,14 +139,32 @@ class StandardKeyboard(BaseKeyboard):
         btn_get_units = types.InlineKeyboardButton(
             text="💂 {} / {}".format(
                 clan_member.clan_units,
-                buildings.clan_building_lvl*clan_building.clan_building.capacity
+                buildings.clan_building_lvl * clan_building.clan_building.capacity
             ),
             callback_data="None"
         )
-
+        clan_member.donate_timer = 0
         keyboard.add(btn_get_units)
 
         session.close()
+        return keyboard
+
+    def create_emoji_clan_keyboard(self):
+        keyboard = copy.deepcopy(self.keyboard)
+        keyboard.row_width = 6
+
+        emojis = [
+            "❤", "‍🔥", "💖", "🔥", "🌶", "💩",
+            "💧", "🌈", "🌞", "🌻", "🌹", "☠",
+            "🥀", "🦄", "🐙", "🎃", "👾", "🔱"
+        ]
+
+        for emoji in emojis:
+            btn = copy.deepcopy(self.btn)
+            btn.text = emoji
+            btn.callback_data = emoji
+            keyboard.insert(btn)
+
         return keyboard
 
     def create_select_units_keyboard(self):
@@ -277,8 +298,8 @@ class StandardKeyboard(BaseKeyboard):
 
         contest: tables.Contest = session.db.query(
             tables.Contest).filter(or_(
-                tables.Contest.clan_id_1 == clan_member.clan_id,
-                tables.Contest.clan_id_2 == clan_member.clan_id)
+            tables.Contest.clan_id_1 == clan_member.clan_id,
+            tables.Contest.clan_id_2 == clan_member.clan_id)
         ).first()
 
         territory_captures = list(contest.territory_captures)
@@ -311,8 +332,8 @@ class StandardKeyboard(BaseKeyboard):
 
         contest: tables.Contest = session.db.query(
             tables.Contest).filter(or_(
-                tables.Contest.clan_id_1 == clan_member.clan_id,
-                tables.Contest.clan_id_2 == clan_member.clan_id)
+            tables.Contest.clan_id_1 == clan_member.clan_id,
+            tables.Contest.clan_id_2 == clan_member.clan_id)
         ).first()
 
         territory_captures = list(contest.territory_captures)
@@ -338,7 +359,7 @@ class StandardKeyboard(BaseKeyboard):
         keyboard.add(keyboards.contest.btn_start_capture)
 
         btn_explore = copy.deepcopy(self.btn)
-        explore_price = random.randint(int(units_count/2), units_count)
+        explore_price = random.randint(int(units_count / 2), units_count)
         btn_explore.text = "{} 💰 (разведка)".format(explore_price)
         btn_explore.callback_data = "explore_price_{}".format(explore_price)
 
@@ -396,6 +417,88 @@ class StandardKeyboard(BaseKeyboard):
         session.close()
         return keyboard
 
+    def create_shop_money_keyboard(self):
+        keyboard = copy.deepcopy(self.keyboard)
+
+        session = db_api.CreateSession()
+
+        townhall: tables.TownHall = session.db.query(
+            tables.TownHall).filter_by(user_id=self.user_id).first()
+        buildings: tables.Buildings = session.db.query(
+            tables.Buildings).filter_by(user_id=self.user_id).first()
+
+        money_values = [500, 2000, 5000, 10000]
+        diamonds_values = [25, 80, 180, 320]
+
+        for i in enumerate(money_values):
+            index = i[0]
+            money_value = i[1]
+            diamond_value = diamonds_values[index]
+
+            btn = copy.deepcopy(self.btn)
+            btn.text = "{} 💰 - {} 💎".format(money_value, diamond_value)
+            btn.callback_data = "shop_buy_money_{}_for_{}".format(money_value, diamond_value)
+            keyboard.add(btn)
+
+        keyboard.add(keyboards.shop.btn_back)
+
+        session.close()
+        return keyboard
+
+    def create_shop_stock_keyboard(self):
+        keyboard = copy.deepcopy(self.keyboard)
+
+        session = db_api.CreateSession()
+
+        townhall: tables.TownHall = session.db.query(
+            tables.TownHall).filter_by(user_id=self.user_id).first()
+        buildings: tables.Buildings = session.db.query(
+            tables.Buildings).filter_by(user_id=self.user_id).first()
+
+        stock_values = [100, 1000, 3000, 6000]
+        diamonds_values = [20, 150, 400, 750]
+
+        for i in enumerate(stock_values):
+            index = i[0]
+            stock_value = i[1]
+            diamond_value = diamonds_values[index]
+
+            btn = copy.deepcopy(self.btn)
+            btn.text = "{} ⚒ - {} 💎".format(stock_value, diamond_value)
+            btn.callback_data = "shop_buy_stock_{}_for_{}".format(stock_value, diamond_value)
+            keyboard.add(btn)
+
+        keyboard.add(keyboards.shop.btn_back)
+
+        session.close()
+        return keyboard
+
+    def create_shop_chest_keyboard(self):
+        keyboard = copy.deepcopy(self.keyboard)
+
+        session = db_api.CreateSession()
+
+        townhall: tables.TownHall = session.db.query(
+            tables.TownHall).filter_by(user_id=self.user_id).first()
+        buildings: tables.Buildings = session.db.query(
+            tables.Buildings).filter_by(user_id=self.user_id).first()
+
+        chests = ages.Age.get_all_chests()
+
+        for chest in chests:
+            index = chests.index(chest)
+            btn = copy.deepcopy(self.btn)
+            btn.text = "{}".format(
+                chest.name
+            )
+            btn.callback_data = "get_chest_{}".format(index)
+            keyboard.add(btn)
+
+        keyboard.add(keyboards.shop.btn_back)
+
+        session.close()
+        return keyboard
+
 
 class PaginationKeyboard(BaseKeyboard):
     @staticmethod
@@ -407,14 +510,14 @@ class PaginationKeyboard(BaseKeyboard):
         page -= 1
 
         if page < 0:
-            page = len(paginated_data)-1
+            page = len(paginated_data) - 1
 
         return page
 
     @staticmethod
     def get_right_page(paginated_data: list, page: int) -> int:
         page += 1
-        if page > len(paginated_data)-1:
+        if page > len(paginated_data) - 1:
             page = 0
 
         return page
@@ -720,14 +823,13 @@ class PaginationKeyboard(BaseKeyboard):
 
         list_buttons = []
         for index in range(0, len(market_table)):
-
             btn = copy.deepcopy(self.btn)
             btn.text = "{} {} - {} 💰".format(
                 market_table[index].count,
                 market_table[index].product,
                 market_table[index].price
             )
-            btn.callback_data = "product_{}".format(market_table[index].id)
+            btn.callback_data = "market_product_{}".format(market_table[index].id)
             list_buttons.append(btn)
 
         list_paginated_buttons = []
@@ -753,7 +855,7 @@ class PaginationKeyboard(BaseKeyboard):
 
         session = db_api.CreateSession()
 
-        clan_invitations_table: typing.List[tables.ClanInvitation] = session.\
+        clan_invitations_table: typing.List[tables.ClanInvitation] = session. \
             db.query(tables.ClanInvitation).filter_by(user_id=self.user_id).join(
             tables.Clan).order_by(desc(tables.Clan.rating)).all()
 
@@ -898,8 +1000,9 @@ class PaginationKeyboard(BaseKeyboard):
         for index in not_owned_territories:
             btn = copy.deepcopy(self.btn)
             territory = base_campaigns[index]
-            btn.text = "{} | x{} 🥷 / x{} 🌲".format(
-                territory.name, sum(territory.units_count), territory.territory_size
+            btn.text = "{} | {} / {} 🌲".format(
+                territory.name, transaction.Purchase.get_price(territory.income),
+                territory.territory_size
             )
             btn.callback_data = "campaign_territory_{}".format(index)
             list_buttons.append(btn)
@@ -979,7 +1082,7 @@ class PaginationKeyboard(BaseKeyboard):
                 else:
                     emoji = re.findall(r"(\W+)\s+", value.name)[0]
                     if db_value > value.unlock_score:
-                        btn.text = "{} (⭐)".format(emoji, db_value-1, value.unlock_score)
+                        btn.text = "{} (⭐)".format(emoji, db_value - 1, value.unlock_score)
                     else:
                         btn.text = "{} ({}/{})".format(emoji, db_value, value.unlock_score)
 
@@ -1011,7 +1114,7 @@ class PaginationKeyboard(BaseKeyboard):
             for x in ages_progress_tree[i]:
                 limit += x
 
-            slice = len(limit)*2 + prev_slice
+            slice = len(limit) * 2 + prev_slice
 
             btn = list_buttons[prev_slice:slice]
 
@@ -1042,7 +1145,7 @@ class PaginationKeyboard(BaseKeyboard):
             keyboard.insert(btn)
 
         list_ages = ages.Age.get_all_ages()
-        next_age_name = list_ages[list_ages.index(townhall.age)+1]
+        next_age_name = list_ages[list_ages.index(townhall.age) + 1]
 
         btn_next_age = copy.deepcopy(self.btn)
         btn_next_age.text = "🌟 {}".format(next_age_name)

@@ -6,10 +6,10 @@ btn_invitations = types.InlineKeyboardButton(
     text="📋 Приглашения", callback_data="clan_invitation"
 )
 btn_rating = types.InlineKeyboardButton(
-    text="⭐ Рейтинги", callback_data="clans_rating"
+    text="⭐ Рейтинг", callback_data="clans_rating"
 )
 btn_create_clan = types.InlineKeyboardButton(
-    text="🔰 Создать", callback_data="create_clan"
+    text="📯 Создать", callback_data="create_clan"
 )
 
 

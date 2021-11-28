@@ -12,5 +12,5 @@ from . import manufacture
 from . import add_to_chat
 from . import text_commands
 from . import help
-from . import user_alert
 from . import shop
+from . import user_alert

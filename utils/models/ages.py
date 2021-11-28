@@ -1,6 +1,6 @@
 from enum import Enum
 from utils.models import base, stock_building,\
-    home, unit, progress_tree, campaigns, clan_building, builder_home, manufacture_building
+    home, unit, progress_tree, campaigns, clan_building, builder_home, manufacture_building, chest
 import typing
 
 
@@ -42,27 +42,34 @@ class Age(Enum):
 
     iron_age: base.Age = base.Age(
         name="Железный Век",
-        townhall_img="bronze",
-        progress_tree=progress_tree.bronze_progress_tree,
+        townhall_img="iron",
+        progress_tree=progress_tree.iron_progress_tree,
         next_age_price=[1120, ],
         buildings=[
-            home.iron_home,
+            home.iron_home_1,
+            home.iron_home_2,
+            home.iron_home_3,
+            stock_building.IronFoundry,
+            stock_building.IronJewelry,
+            stock_building.IronFelting,
+            manufacture_building.IronForger,
+            manufacture_building.IronButcher
+        ],
+        units=[unit.iron_legionary, None, unit.iron_rider],
+        campaigns=[]
+    )
+
+    early_middle_age: base.Age = base.Age(
+        name="Раннее Средневековье",
+        townhall_img="bronze",
+        progress_tree=progress_tree.iron_progress_tree,
+        next_age_price=[1120, ],
+        buildings=[
+            home.iron_home_1,
         ],
         units=[unit.bronze_swordsman, unit.bronze_archer],
         campaigns=[]
     )
-
-    # early_middle_age: base.Age = base.Age(
-    #     name="Раннее Средневековье",
-    #     townhall_img="bronze",
-    #     progress_tree=progress_tree.iron_progress_tree,
-    #     next_age_price=[1120, ],
-    #     buildings=[
-    #         home.iron_home,
-    #     ],
-    #     units=[unit.bronze_swordsman, unit.bronze_archer],
-    #     campaigns=[]
-    # )
 
     # early_middle_age = models.Age(
     #     name="Раннее Средневековье",
@@ -189,3 +196,18 @@ class Age(Enum):
             trees += i.value.progress_tree
 
         return trees
+
+    @staticmethod
+    def get_all_chests():
+
+        chests = [
+            chest.Caesar,
+            chest.Atilla,
+            chest.Barbarossa,
+            chest.JoanArc,
+            chest.Napoleon,
+            chest.Churchill,
+            chest.SteveJobs
+        ]
+
+        return chests

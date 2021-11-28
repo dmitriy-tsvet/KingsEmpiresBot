@@ -25,7 +25,7 @@ bronze_sawmill = base.StockBuilding(
 )
 
 bronze_forager = base.StockBuilding(
-    name="🏠⛓ Кузнец",
+    name="⛓🏠 Кузнец",
     efficiency=420,
     create_price=[0, 0, 200],
     create_time_sec=20,
@@ -34,7 +34,7 @@ bronze_forager = base.StockBuilding(
 
 
 bronze_winery = base.StockBuilding(
-    name="🍷 Винодельня",
+    name="🍷🏠 Винодельня",
     efficiency=97,
     create_price=[240, 30],
     create_time_sec=40,
@@ -45,27 +45,32 @@ bronze_winery = base.StockBuilding(
 # Iron Age
 #
 
-# iron_butcher = models.Building(
-#     name="🥩 Мясник",
-#     resource="food",
-#     efficiency=800,
-#     create_price=705,
-#     create_time_sec=1560,
-#     upgrade_price=300,
-#     upgrade_time_sec=780,
-#
-# )
-#
-# iron_sawmill = models.Building(
-#     name="🪓 Лесопилка",
-#     resource="stock",
-#     efficiency=300,
-#     create_price=450,
-#     create_time_sec=1380,
-#     upgrade_price=310,
-#     upgrade_time_sec=660,
-#
-# )
+IronFoundry = base.StockBuilding(
+    name="▫🏠 Литейная железа",
+    efficiency=360,
+    create_price=[4100, 410],
+    create_time_sec=4200,
+    manpower=66
+)
+
+IronJewelry = base.StockBuilding(
+    name="💍🏠 Ювелирная",
+    efficiency=480,
+    create_price=[4800, 680],
+    create_time_sec=6000,
+    manpower=122
+)
+
+IronFelting = base.StockBuilding(
+    name="🧶🏠 Сукновальня",
+    efficiency=720,
+    create_price=[0, 0, 400],
+    create_time_sec=20,
+    manpower=88
+)
+
+
+
 #
 #
 # #

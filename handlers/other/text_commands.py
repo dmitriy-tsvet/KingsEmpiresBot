@@ -5,18 +5,18 @@ from aiogram.dispatcher import FSMContext
 import re
 import typing
 from utils.misc.read_file import read_txt_file
-from utils.classes import timer, transaction
+from utils.classes import timer, transaction, kb_constructor
 
-from utils.models import models, ages, clan_building, base
+from utils.models import ages, clan_building, base
 from utils.db_api import tables, db_api
+from utils.misc import regexps
 from utils.misc.operation_with_lists import subtract_nums_list, add_nums_list
 
-forwarding_units = r"[Кк]инуть\s+(\d+)"
 sell_product = r"продать\s+(\d+)\s+(.*)\s+за\s+(\d+)"
 price = r"цена|прайс"
 
 
-@dp.message_handler(filters.IsReplyFilter(True), regexp=forwarding_units, state="*")
+@dp.message_handler(filters.IsReplyFilter(True), regexp=regexps.ClanRegexp.donate, state="*")
 async def forwarding_units_handler(message: types.Message, state: FSMContext):
     replied_user_id = message.reply_to_message.from_user.id
     user_id = message.from_user.id
@@ -69,6 +69,7 @@ async def forwarding_units_handler(message: types.Message, state: FSMContext):
             await message.reply("Клановая Крепость уже полна.")
         else:
 
+            base_units = ages.Age.get_all_units()
             clan_member.clan_units += count_forward_units
 
             remainder_units = 0
@@ -76,16 +77,48 @@ async def forwarding_units_handler(message: types.Message, state: FSMContext):
                 remainder_units = clan_member.clan_units - max_clan_units
                 clan_member.clan_units = max_clan_units
 
+            array_with_nums = [0 for i in range(0, 5)]
+            units_table_copy = add_nums_list(
+                count_forward_units - remainder_units, array_with_nums
+            )
+            real_units_count = 0
+            for unit_type in units_table.units_type:
+                if type(unit_type) is int:
+                    index = units_table.units_type.index(unit_type)
+                    if units_table_copy[index] != 0:
+                        real_units_count += base_units[unit_type].weight * units_table_copy[index]
+
+            if real_units_count == 0:
+                await message.reply("У тебя нету столько.")
+                session.close()
+                return
+
+            replied_units = [i for i in replied_units_table.units_count if i != 0]
+
+            replied_units = add_nums_list(
+                count_forward_units-remainder_units, replied_units
+            )
+            replied_units += [0, 0, 0, 0, 0]
+            replied_units_table.units_count = replied_units[:5]
+
             units_count_sender = list(units_table.units_count)
             units_table.units_count = subtract_nums_list(
                 count_forward_units-remainder_units, units_count_sender
             )
+            replied_units_table.real_units_count += real_units_count
+            units_table.real_units_count -= real_units_count
+
+            session.db.commit()
 
             await message.answer(
                 "<i>{} высылает боевую поддержку\n"
                 "в размере 💂 {} воинов.</i>".format(
                     mention, count_forward_units-remainder_units
                 ))
+
+            keyboard = kb_constructor.StandardKeyboard(
+                user_id=townhall_replied.user_id).create_get_clan_units_keyboard()
+            await message.reply_to_message.edit_reply_markup(keyboard)
 
         session.close()
 
@@ -121,12 +154,13 @@ async def sell_product(message: types.Message, state: FSMContext):
         r"продать\s+(\d+)\s+(.*)\s+за\s+(\d+)", message.text)[0]
 
     product_name = result[1]
+    print(product_name)
     count = int(result[0])
     price = int(result[2])
 
     reg = re.compile(r"\W+\s+(?i)({})".format(product_name))
     selling_product = list(filter(reg.match, unlocked_products))
-
+    print(selling_product)
     if not selling_product:
         await message.reply("Нету такого товара.")
         session.close()
@@ -139,31 +173,34 @@ async def sell_product(message: types.Message, state: FSMContext):
 
     manufacture_storage = list(manufacture.storage)
     products_id = [product["product_id"] for product in manufacture_storage]
-
+    print(products_id)
     if unlocked_products.index(selling_product[0]) not in products_id:
         await message.reply("У вас нету этого товара.")
         session.close()
         return
+    manufacture_storage_copy = manufacture_storage[:]
+    for product in manufacture_storage_copy:
+        index = manufacture_storage_copy.index(product)
+        product_id = product["product_id"]
+        product_count = product["count"]
 
-    for product in manufacture_storage:
-        index = manufacture_storage.index(product)
         products_id.append(product["product_id"])
-        if product["product_id"] == unlocked_products.index(selling_product[0]):
-            if count > product["count"]:
+        if product_id == unlocked_products.index(selling_product[0]):
+            if count > product_count:
                 await message.reply("У тебя только <b>x{} {}.</b>".format(
-                    product["count"],
+                    product_count,
                     selling_product[0])
                 )
                 session.close()
                 return
             else:
-                product["count"] -= count
-                if product["count"] < 1:
+                product_count -= count
+                if product_count < 1:
                     manufacture_storage.remove(product)
                 else:
                     manufacture_storage[index] = {
-                        "product_id": product["product_id"],
-                        "count": product["count"]
+                        "product_id": product_id,
+                        "count": product_count
                     }
 
     market_table: typing.List[tables.Market] = session.db.query(
@@ -188,6 +225,7 @@ async def sell_product(message: types.Message, state: FSMContext):
 
     manufacture.storage = manufacture_storage
     session.db.add(product)
+    session.db.commit()
     await message.reply(
         text="Товар успешно добавлен."
     )
@@ -195,39 +233,39 @@ async def sell_product(message: types.Message, state: FSMContext):
     session.close()
 
 
-@dp.message_handler(filters.IsReplyFilter(True), regexp=price, state="*")
-async def sell_product(message: types.Message, state: FSMContext):
-    user_id = message.from_user.id
-    new_session = db_api.CreateSession()
-    townhall_table: tables.TownHall = new_session.filter_by_user_id(
-        user_id=user_id, table=tables.TownHall
-    )
-    current_state = await state.get_state()
-    age_model: models.Age = ages.AgesList.get_age_model(townhall_table.age)
-
-    if current_state == "Units:menu":
-        text = ""
-        for unit in age_model.units:
-            create_price = transaction.Transaction.get_text_price(
-                unit.create_price)
-
-            text += "x1{} - {}\n".format(unit.name, create_price)
-
-        await message.reply(
-            text=text
-        )
-
-    elif current_state == "Citizens:menu":
-
-        create_price = transaction.Transaction.get_text_price(
-            age_model.citizen.create_price)
-
-        text = "x1{} Житель - {}\n".format(
-            age_model.citizen.name,
-            create_price)
-
-        await message.reply(
-            text=text
-        )
+# @dp.message_handler(filters.IsReplyFilter(True), regexp=price, state="*")
+# async def sell_product(message: types.Message, state: FSMContext):
+#     user_id = message.from_user.id
+#     new_session = db_api.CreateSession()
+#     townhall_table: tables.TownHall = new_session.filter_by_user_id(
+#         user_id=user_id, table=tables.TownHall
+#     )
+#     current_state = await state.get_state()
+#     age_model: models.Age = ages.AgesList.get_age_model(townhall_table.age)
+#
+#     if current_state == "Units:menu":
+#         text = ""
+#         for unit in age_model.units:
+#             create_price = transaction.Transaction.get_text_price(
+#                 unit.create_price)
+#
+#             text += "x1{} - {}\n".format(unit.name, create_price)
+#
+#         await message.reply(
+#             text=text
+#         )
+#
+#     elif current_state == "Citizens:menu":
+#
+#         create_price = transaction.Transaction.get_text_price(
+#             age_model.citizen.create_price)
+#
+#         text = "x1{} Житель - {}\n".format(
+#             age_model.citizen.name,
+#             create_price)
+#
+#         await message.reply(
+#             text=text
+#         )
 
 

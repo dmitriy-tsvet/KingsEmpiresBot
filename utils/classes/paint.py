@@ -2,7 +2,7 @@ from PIL import Image, ImageFont, ImageDraw
 import time, random
 from utils.misc import read_file
 from utils.db_api import tables
-from utils.models import models, ages
+from utils.models import ages, base
 
 
 class PaintMap:
@@ -14,17 +14,18 @@ class PaintMap:
         clan_id_1 = contest.clan_id_1
         clan_id_2 = contest.clan_id_2
         indexes = [i for i, x in enumerate(contest.territory_owners)]
+        clans = [contest.clan_id_1, contest.clan_id_2]
 
         for index in indexes:
             if contest.territory_owners[index] == clan_id_1:
                 with Image.open('data/img/contest/{}_{}.png'.format(
-                    contest.colors[clan_id_1], index+1
+                    contest.colors[clans.index(clan_id_1)], index+1
                 )) as captured_territory:
                     background.paste(captured_territory, (0, 0), captured_territory)
 
             if contest.territory_owners[index] == clan_id_2:
                 with Image.open('data/img/contest/{}_{}.png'.format(
-                    contest.colors[clan_id_2], index+1
+                    contest.colors[clans.index(clan_id_1)], index+1
                 )) as captured_territory:
                     background.paste(captured_territory, (0, 0), captured_territory)
 
@@ -41,7 +42,7 @@ class PaintMap:
             territory_owned = territory[1]
             index = territory[0]
 
-            base_age: models.Age = ages.Age.get(townhall.age)
+            base_age: base.Age = ages.Age.get(townhall.age)
             with Image.open(base_age.townhall_img) as photo:
                 townhall_img = photo.copy()
                 size = 400, 325

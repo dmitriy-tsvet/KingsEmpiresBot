@@ -14,7 +14,7 @@ from aiogram import exceptions
 from aiogram.dispatcher import FSMContext
 from utils.misc.read_file import read_txt_file
 from utils.db_api import tables, db_api
-from utils.models import ages, models
+from utils.models import ages, base
 from utils.classes import kb_constructor, timer, transaction
 from utils.war_system import fight
 from utils.misc.operation_with_lists import subtract_nums_list
@@ -35,6 +35,20 @@ async def territory_handler(message: types.Message, state: FSMContext):
     # tables data
     clan_member: tables.ClanMember = session.db.query(
         tables.ClanMember).filter_by(user_id=user_id).join(tables.Clan).first()
+    buildings: tables.Buildings = session.db.query(
+        tables.Buildings).filter_by(user_id=user_id).first()
+    base_buildings = ages.Age.get_all_buildings()
+
+    if buildings.clan_building_lvl == 0:
+        sticker = read_txt_file("sticker/sad_knight")
+        await message.answer_sticker(sticker=sticker)
+
+        msg_text = read_txt_file("text/clan/destroyed_clan")
+        await message.answer(
+            text=msg_text,
+        )
+        session.close()
+        return
 
     if clan_member is None:
         msg_text = read_txt_file("text/clan/without_clan")
@@ -60,11 +74,12 @@ async def territory_handler(message: types.Message, state: FSMContext):
     msg_text = read_txt_file("text/clan/in_clan")
     clan_msg = await message.answer(
         text=msg_text.format(
+            clan_member.clan.emoji,
             clan_member.clan.name,
             clan_member.clan.description[:21],
             clan_member.clan.rating,
-            clan_creator.first_name,
             len(clan_members),
+            clan_creator.first_name,
             clan_member.rank),
         reply_markup=keyboard
     )
@@ -114,14 +129,15 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
             townhall.money -= 5000
         else:
             await callback.answer(
-                "Вам не хватает {} 💰".format(
+                "Для создания клана не хватает {} 💰".format(
                     5000 - townhall.money)
             )
             session.close()
             return
 
         clan_msg = await clan_msg.edit_text(
-            text="Придумайте названия для своего клана.\n"
+            text="Придумайте <b>название</b> для своего\n"
+                 "клана. (макс. 16 символов)\n"
                  "<i>Ответив на это сообщение.</i>"
         )
         await state.update_data({
@@ -136,11 +152,12 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
         text = ""
         num = 1
         for clan in clan_table[:10]:
-            text += "{}. {} [ {} ⭐ ]\n".format(num, clan.name, clan.rating)
+            text += "{}. <b>{}</b> [ <code>{}</code> ⭐ ]\n".format(num, clan.name, clan.rating)
             num += 1
 
+        msg_text = read_txt_file("text/clan/rating")
         await clan_msg.edit_text(
-            text=text,
+            text=msg_text.format(text),
             reply_markup=keyboards.clan.kb_back
         )
 
@@ -338,8 +355,10 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
             clan_id=clan_invitation_table.clan_id,
             user_id=user_id,
             rank=rank,
-            money_donate=0,
-            units_donate=0
+            contest_score=0,
+            clan_units=0,
+            units_donate=0,
+            donate_timer=0
         )
         session.db.add(new_clan_member)
 
@@ -387,16 +406,19 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
         msg_text = read_txt_file("text/hints/foreign_button")
         return await callback.answer(msg_text)
 
-    keyboard = kb_constructor.PaginationKeyboard(
-        user_id=user_id
-    )
-
     session = db_api.CreateSession()
 
     townhall: tables.TownHall = session.db.query(
         tables.TownHall).filter_by(user_id=user_id).first()
+    clan_member: tables.ClanMember = session.db.query(
+        tables.ClanMember).filter_by(user_id=user_id).first()
 
     if callback.data == "get_clan_units":
+
+        if clan_member.donate_timer != 0:
+            await callback.answer("Станет доступно позже.")
+            session.close()
+            return
         msg_text = read_txt_file("text/clan/get_clan_units")
         keyboard = kb_constructor.StandardKeyboard(
             user_id=user_id).create_get_clan_units_keyboard()
@@ -407,6 +429,10 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
             text=msg_text.format(townhall.country_name, callback.from_user.get_mention()),
             reply_markup=keyboard
         )
+        clan_member.donate_timer = timer.Timer.set_timer(28800)
+        session.db.commit()
+
+
 
     session.close()
 
@@ -444,9 +470,8 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
         await clan_msg.edit_text(
             text=msg_text.format(
                 checked_clan_member.user.first_name,
+                checked_clan_member.contest_score,
                 checked_clan_member.rank,
-                checked_clan_member.money_donate,
-                checked_clan_member.units_donate
             ),
             reply_markup=keyboard
         )
@@ -455,34 +480,41 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
         checked_clan_member: tables.ClanMember = session.db.query(
             tables.ClanMember).filter_by(id=member_id).first()
 
-        if checked_clan_member.rank == "Рекрут":
-            checked_clan_member.rank = "Старейшина"
-        elif checked_clan_member.rank == "Старейшина":
-            checked_clan_member.rank = "Заместитель"
+        if clan_member.rank in ("Заместитель", "Лидер"):
 
-        session.db.commit()
+            if checked_clan_member.rank == "Рекрут":
+                checked_clan_member.rank = "Старейшина"
+            elif checked_clan_member.rank == "Старейшина":
+                checked_clan_member.rank = "Заместитель"
 
-        keyboard = kb_constructor.PaginationKeyboard(
-            user_id=user_id).create_members_keyboard()
-        await clan_msg.edit_text(
-            text=clan_members_msg.html_text,
-            reply_markup=keyboard
-        )
+            session.db.commit()
+
+            keyboard = kb_constructor.PaginationKeyboard(
+                user_id=user_id).create_members_keyboard()
+            await clan_msg.edit_text(
+                text=clan_members_msg.html_text,
+                reply_markup=keyboard
+            )
 
     elif kick_member:
         member_id = int(kick_member[0])
 
-        session.db.query(
-            tables.ClanMember).filter_by(id=member_id).delete()
-        session.db.commit()
+        checked_clan_member: tables.ClanMember = session.db.query(
+            tables.ClanMember).filter_by(id=member_id).first()
 
-        keyboard = kb_constructor.PaginationKeyboard(
-            user_id=user_id).create_members_keyboard()
+        if clan_member.rank in ("Заместитель", "Лидер"):
+            if checked_clan_member.rank != "Лидер" and clan_member.rank != checked_clan_member.rank:
+                session.db.query(
+                    tables.ClanMember).filter_by(id=member_id).delete()
+                session.db.commit()
 
-        await clan_msg.edit_text(
-            text=clan_members_msg.html_text,
-            reply_markup=keyboard
-        )
+                keyboard = kb_constructor.PaginationKeyboard(
+                    user_id=user_id).create_members_keyboard()
+
+                await clan_msg.edit_text(
+                    text=clan_members_msg.html_text,
+                    reply_markup=keyboard
+                )
     elif callback.data == "leave_clan":
         await clan_msg.edit_text(
             text="Вы уверены,\n что хотите покинуть клан?",
@@ -548,12 +580,71 @@ async def set_clan_name(message: types.Message, state: FSMContext):
 
     if message.reply_to_message.message_id == data.get("message_id"):
         session = db_api.CreateSession()
-        clan_name = message.text    # need check regx
+        clan_name = message.text[:16]
+
+        clan_msg = await message.reply(
+            text="Придумайте <b>описание</b> для \n"
+                 "клана. (макс. 21 символ)\n"
+                 "<i>Ответив на это сообщение.</i>"
+        )
+        await state.update_data({
+            "clan_name": clan_name,
+            "message_id": clan_msg.message_id
+        })
+        await states.Clan.set_description.set()
+        session.close()
+
+
+@dp.message_handler(filters.IsReplyFilter(True), state=states.Clan.set_description)
+async def set_clan_name(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    user_id = message.from_user.id
+
+    if message.reply_to_message.message_id == data.get("message_id"):
+        session = db_api.CreateSession()
+        clan_description = message.text[:21]
+        await state.update_data({
+            "clan_description": clan_description,
+        })
+
+        keyboard = kb_constructor.StandardKeyboard(
+            user_id=user_id).create_emoji_clan_keyboard()
+        set_emoji_msg = await message.answer(
+            text="Выберите <b>логотип</b> вашего клана.",
+            reply_markup=keyboard
+        )
+        await state.update_data({
+            "set_emoji_msg": set_emoji_msg
+        })
+        await states.Clan.set_emoji.set()
+        session.close()
+
+
+@dp.callback_query_handler(state=states.Clan.set_emoji)
+async def set_clan_name(callback: types.CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    user_id = callback.from_user.id
+
+    emojis = [
+        "❤", "‍🔥", "💖", "🔥", "🌶", "💩",
+        "💧", "🌈", "🌞", "🌻", "🌹", "☠",
+        "🥀", "🦄", "🐙", "🎃", "👾", "🔱"
+    ]
+    session = db_api.CreateSession()
+
+    if callback.data in emojis:
+        set_emoji_msg: types.Message = data.get("set_emoji_msg")
+        await set_emoji_msg.delete()
+
+        clan_name = data.get("clan_name")
+        clan_description = data.get("clan_description")
+        clan_emoji = callback.data
 
         new_clan = tables.Clan(
             name=clan_name,
+            description=clan_description,
+            emoji=clan_emoji,
             rating=0,
-            description="Описание.",
             money=0,
             units=0,
             creator=user_id
@@ -561,23 +652,51 @@ async def set_clan_name(message: types.Message, state: FSMContext):
         session.db.add(new_clan)
         session.db.commit()
 
-        created_clan: tables.Clan = session.db.query(
+        clan: tables.Clan = session.db.query(
             tables.Clan).filter_by(creator=user_id).first()
 
-        if created_clan is not None:
+        if clan is not None:
             new_clan_member = tables.ClanMember(
-                clan_id=created_clan.clan_id,
+                clan_id=clan.clan_id,
                 user_id=user_id,
                 clan_units=0,
                 rank="Лидер"
             )
             session.db.add(new_clan_member)
+            session.db.commit()
 
-        await message.reply(
-            "Вы успешно создали клан: {}".format(clan_name)
+        clan_member: tables.ClanMember = session.db.query(
+            tables.ClanMember).filter_by(user_id=user_id).first()
+
+        clan_members: typing.List[tables.ClanMember] = session.db.query(
+            tables.ClanMember).filter_by(clan_id=clan_member.clan_id).all()
+
+        clan_creator: tables.User = session.db.query(
+            tables.User).filter_by(user_id=clan_member.clan.creator).first()
+
+        keyboard = kb_constructor.StandardKeyboard(
+            user_id=user_id).create_clan_keyboard()
+
+        msg_text = read_txt_file("text/clan/in_clan")
+
+        clan_msg = await callback.message.answer(
+            text=msg_text.format(
+                clan.emoji,
+                clan.name,
+                clan.description[:21],
+                clan.rating,
+                len(clan_members),
+                clan_creator.first_name,
+                clan_member.rank),
+            reply_markup=keyboard
         )
-        await state.reset_state(with_data=False)
-        session.close()
+        await state.reset_state(with_data=True)
+        await state.set_data({
+            "user_id": user_id,
+            "clan_msg": clan_msg
+        })
+
+    session.close()
 
 
 @dp.message_handler(filters.IsReplyFilter(True), regexp=ClanRegexp.invite, state="*")
@@ -620,42 +739,42 @@ async def invite_user_clan_handler(message: types.Message, state: FSMContext):
     session.close()
 
 
-@dp.message_handler(regexp=ClanRegexp.donate, state="*")
-async def clan_donate_handler(message: types.Message, state: FSMContext):
+# @dp.message_handler(regexp=ClanRegexp.donate, state="*")
+# async def clan_donate_handler(message: types.Message, state: FSMContext):
+#
+#     user_id = message.from_user.id
+#
+#     session = db_api.CreateSession()
+#     clan_member_table: tables.ClanMember = session.db.query(
+#         tables.ClanMember).filter_by(user_id=user_id).join(tables.Clan).first()
+#
+#     if clan_member_table is None:
+#         return
+#
+#     townhall_table: tables.TownHall = session.filter_by_user_id(
+#         user_id=user_id, table=tables.TownHall)
+#
+#     units_table: tables.Units = session.filter_by_user_id(
+#         user_id=user_id, table=tables.Units)
+#
+#     clan_donate = re.findall(r"клан\s+(казна|армия)\s+(\d+)", message.text)[0]
+#     donate_count = int(clan_donate[1])
 
-    user_id = message.from_user.id
+    # if clan_donate[0] == "казна" and townhall_table.money >= donate_count:
+    #     townhall_table.money -= donate_count
+    #     clan_member_table.money_donate += donate_count
+    #     clan_member_table.clan.money += donate_count
+    #     await message.reply("{} пожертвовал в клан {} 💰.".format(
+    #         message.from_user.mention, donate_count))
 
-    session = db_api.CreateSession()
-    clan_member_table: tables.ClanMember = session.db.query(
-        tables.ClanMember).filter_by(user_id=user_id).join(tables.Clan).first()
-
-    if clan_member_table is None:
-        return
-
-    townhall_table: tables.TownHall = session.filter_by_user_id(
-        user_id=user_id, table=tables.TownHall)
-
-    units_table: tables.Units = session.filter_by_user_id(
-        user_id=user_id, table=tables.Units)
-
-    clan_donate = re.findall(r"клан\s+(казна|армия)\s+(\d+)", message.text)[0]
-    donate_count = int(clan_donate[1])
-
-    if clan_donate[0] == "казна" and townhall_table.money >= donate_count:
-        townhall_table.money -= donate_count
-        clan_member_table.money_donate += donate_count
-        clan_member_table.clan.money += donate_count
-        await message.reply("{} пожертвовал в клан {} 💰.".format(
-            message.from_user.mention, donate_count))
-
-    elif clan_donate[0] == "армия" and units_table.all_unit_counts >= donate_count:
-        units_table.all_unit_counts -= donate_count
-        unit_counts: list = subtract_nums_list(
-            donate_count, list(units_table.unit_counts))
-        units_table.unit_counts = unit_counts
-        clan_member_table.units_donate += donate_count
-        clan_member_table.clan.units += donate_count
-        await message.reply("{} выслал поддержку клану {} 💂.".format(
-            message.from_user.mention, donate_count))
-
-    session.close()
+    # elif clan_donate[0] == "армия" and units_table.all_unit_counts >= donate_count:
+    #     units_table.all_unit_counts -= donate_count
+    #     unit_counts: list = subtract_nums_list(
+    #         donate_count, list(units_table.unit_counts))
+    #     units_table.unit_counts = unit_counts
+    #     clan_member_table.units_donate += donate_count
+    #     clan_member_table.clan.units += donate_count
+    #     await message.reply("{} выслал поддержку клану {} 💂.".format(
+    #         message.from_user.mention, donate_count))
+    #
+    # session.close()

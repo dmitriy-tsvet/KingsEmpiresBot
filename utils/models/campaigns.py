@@ -25,7 +25,7 @@ class Campaigns(Enum):
         name="🌳 Greathia",
         income=[95, 125],
         units_type=[unit.stone_militia, unit.bronze_archer],
-        units_count=[74, 45],
+        units_count=[74, 0],
         time_capture_sec=300,
         territory_size=3
     )

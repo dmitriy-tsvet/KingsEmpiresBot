@@ -1,6 +1,6 @@
 import time
 from utils.db_api import db_api, tables
-from utils.models import models, ages, base
+from utils.models import ages, base
 from utils.classes import maths
 import json
 import typing
@@ -130,16 +130,19 @@ class ManufactureTimer(Timer):
             tables.Manufacture).filter_by(user_id=user_id).first()
 
         creation_queue = list(manufacture.creation_queue)
+        creation_queue_copy = creation_queue[:]
+
         wait_queue = list(manufacture.wait_queue)
+
         for queue in creation_queue:
             time_left = self.get_left_time(queue["timer"])
 
             if time_left[0] == 0:
-                creation_queue.remove(queue)
+                creation_queue_copy.remove(queue)
                 wait_queue.append(queue)
 
                 manufacture.wait_queue = wait_queue
-                manufacture.creation_queue = creation_queue
+                manufacture.creation_queue = creation_queue_copy
                 session.db.commit()
 
         session.close()
@@ -152,34 +155,34 @@ class ManufactureTimer(Timer):
         wait_queue = list(manufacture.wait_queue)
         player_products = list(manufacture.storage)
         for queue in wait_queue:
-            time_left = self.get_left_time(queue["timer"])
             added_products = []
+            added_products.append(queue)
 
-            if time_left[0] == 0:
-                added_products.append(queue)
+            if queue["product_id"] != product_id:
+                continue
 
-                products_id = []
-                for product in player_products:
-                    if product["product_id"] == product_id:
-                        new_product = {
-                            "product_id": product_id,
-                            "count": product["count"]+1
-                        }
-                        index = player_products.index(product)
-                        player_products.remove(product)
-                        player_products.insert(index, new_product)
-                    products_id.append(product["product_id"])
+            products_id = []
+            for product in player_products:
+                if product["product_id"] == product_id:
+                    new_product = {
+                        "product_id": product_id,
+                        "count": product["count"]+1
+                    }
+                    index = player_products.index(product)
+                    player_products.remove(product)
+                    player_products.insert(index, new_product)
+                products_id.append(product["product_id"])
 
-                if product_id not in products_id:
-                    player_products.append({
-                            "product_id": product_id,
-                            "count": 1
-                        })
-                wait_queue.remove(queue)
+            if product_id not in products_id:
+                player_products.append({
+                        "product_id": product_id,
+                        "count": 1
+                    })
+            wait_queue.remove(queue)
 
-                manufacture.storage = player_products
-                manufacture.wait_queue = wait_queue
-                session.db.commit()
+            manufacture.storage = player_products
+            manufacture.wait_queue = wait_queue
+            session.db.commit()
 
         session.close()
 
@@ -221,22 +224,6 @@ class CampaignTimer:
 
 
 class UnitsTimer(Timer):
-    def get_upgrade_timer(self, units_table):
-        set_time = units_table.upgrade_timer
-        levels = list(units_table.levels)
-        num_unit = units_table.unit_num
-
-        time_left = self.get_left_time(set_time)
-
-        if time_left[0] == 0:
-            levels[num_unit] += 1
-            units_table.levels = levels
-            units_table.upgrade_timer = None
-            units_table.unit_num = None
-            return 0, "сек."
-        else:
-            return time_left
-
     @staticmethod
     def get_create_time_left(seconds):
         if seconds < 60:

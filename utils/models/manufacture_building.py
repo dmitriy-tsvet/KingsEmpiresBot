@@ -20,24 +20,24 @@ bronze_plantation = base.ManufactureBuilding(
     manpower=108
 )
 
-#
-# Iron Age
-#
 
-# bronze_pottery = base.ManufactureBuilding(
-#     name="🧵 Портной",
-#     products=[],
-#     create_price=[96, ],
-#     create_time_sec=20,
-#
-# )
-#
-# bronze_forger = base.ManufactureBuilding(
-#     name="🔨 Мясник",
-#     products=[],
-#     create_price=[96, ],
-#     create_time_sec=20,
-#
-# )
-#
+# Iron Age
+
+IronForger = base.ManufactureBuilding(
+    name="🥩🏠 Мясник",
+    products=[product.meat, product.chicken],
+    create_price=[1500, 2400],
+    create_time_sec=5400,
+    manpower=230
+)
+
+
+IronButcher = base.ManufactureBuilding(
+    name="🧵🏠 Портной",
+    products=[product.threads, product.socks],
+    create_price=[1500, 2400],
+    create_time_sec=5400,
+    manpower=230
+)
+
 

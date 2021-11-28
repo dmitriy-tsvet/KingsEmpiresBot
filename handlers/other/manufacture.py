@@ -14,7 +14,7 @@ from aiogram import exceptions
 
 from aiogram.dispatcher import FSMContext
 from utils.db_api import tables, db_api
-from utils.models import ages, models
+from utils.models import ages
 from utils.classes import kb_constructor, timer
 from utils.models import base
 from utils.misc.regexps import ManufactureRegexp
@@ -143,13 +143,14 @@ async def callback_handler(callback: types.CallbackQuery, state: FSMContext):
             return
 
         creation_queue = list(manufacture.creation_queue)
-        for queue in creation_queue:
-            if queue["building_pos"] != building_pos:
-                creation_queue.append({
-                        "product_id": product_id,
-                        "timer": timer.Timer.set_timer(product.create_time_sec),
-                        "building_pos": building_pos
-                    })
+
+        creation_queue_buildings = [i["building_pos"] for i in creation_queue]
+        if building_pos not in creation_queue_buildings:
+            creation_queue.append({
+                "product_id": product_id,
+                "timer": timer.Timer.set_timer(product.create_time_sec),
+                "building_pos": building_pos
+            })
 
         if not creation_queue:
             creation_queue.append({

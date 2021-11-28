@@ -111,6 +111,7 @@ class Clan(Base):
     clan_id = Column(Integer, primary_key=True)
     name = Column(String)
     description = Column(String)
+    emoji = Column(String)
     rating = Column(Integer)
     units = Column(Integer)
     money = Column(Integer)
@@ -130,8 +131,9 @@ class ClanMember(Base):
     user_id = Column(Integer, ForeignKey("user.user_id"))
     rank = Column(String)
     clan_units = Column(Integer)
-    money_donate = Column(Integer)
+    contest_score = Column(Integer)
     units_donate = Column(Integer)
+    donate_timer = Column(Integer)
 
 
 class ClanInvitation(Base):

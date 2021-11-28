@@ -38,15 +38,21 @@ async def territory_handler(message: types.Message, state: FSMContext):
     owned_territories = [i for i, x in enumerate(campaign.territory_owned) if x is True]
     base_units = ages.Age.get_all_units()
 
-    units_str = ""
-    for index in units.units_type:
-        if index is None:
+    campaign_str = ""
+    numeration = 0
+    for territory in enumerate(campaign.territory_owned):
+        index = territory[0]
+        value = territory[1]
+        numeration += 1
+
+        if not value:
+            campaign_str += "{}. {}\n".format(
+                numeration, base_campaigns[index].name
+            )
             continue
 
-        base_unit = base_units[index]
-        unit_emoji = re.findall(r"\W+", base_unit.name)[0]
-        units_str += "- x{} {}\n".format(
-            units.units_count[units.units_type.index(index)], unit_emoji
+        campaign_str += "{}. {} - ⭐\n".format(
+            numeration, base_campaigns[index].name
         )
 
     paint.PaintMap.paint_campaign(campaign=campaign, townhall=townhall)
@@ -59,12 +65,11 @@ async def territory_handler(message: types.Message, state: FSMContext):
     msg_text = read_txt_file("text/campaign/campaign")
     campaign_msg = await message.answer(
         text=msg_text.format(
-            len(owned_territories), len(base_campaigns), sum(units.units_count),
-            units_str
+            len(owned_territories), len(base_campaigns),
+            campaign_str
         ),
         reply_markup=keyboards.campaigns.kb_campaign,
         disable_web_page_preview=True
-
     )
 
     await state.update_data({
@@ -174,7 +179,8 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
                 elif campaign.territory_captures["win"] is False:
                     msg_text = read_txt_file("text/campaign/capture_lose")
                     await campaign_msg.edit_text(
-                        text=msg_text
+                        text=msg_text,
+                        reply_markup=keyboards.campaigns.kb_back_campaign
                     )
                 campaign.territory_captures = {}
             else:
@@ -208,7 +214,6 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
         return await callback.answer(msg_text)
 
     session = db_api.CreateSession()
-    base_campaigns = ages.Age.get_all_campaigns()
 
     units: tables.Units = session.db.query(
         tables.Units).filter_by(user_id=user_id).first()
@@ -217,88 +222,66 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
     if select_territory:
         territory_index = int(select_territory[0])
 
-        # keyboard = kb_constructor.StandardKeyboard(
-        #     user_id=user_id).create_select_units_keyboard()
-        msg_text = read_txt_file("text/campaign/select_units")
-        await campaign_msg.edit_text(
-            text=msg_text.format(
-                sum(units.units_count)
-            ),
-            reply_markup=keyboards.campaigns.kb_back_campaign
-        )
-
         await state.update_data({
             "campaign_territory_index": territory_index
         })
-        await states.Campaign.select_units.set()
-    session.close()
-
-
-@dp.message_handler(state=states.Campaign.select_units)
-async def capture_handler(message: types.Message, state: FSMContext):
-    data = await state.get_data()
-    user_id = message.from_user.id
-    campaign_msg: types.Message = data.get("campaign_msg")
-
-    session = db_api.CreateSession()
-
-    units: tables.Units = session.db.query(
-        tables.Units).filter_by(user_id=user_id).first()
-    base_campaigns = ages.Age.get_all_campaigns()
-    base_campaign = base_campaigns[data.get("campaign_territory_index")]
-
-    try:
-        campaign_msg.message_id
-    except AttributeError:
-        return
-    
-    if campaign_msg.message_id == message.reply_to_message.message_id:
-        select_units_count = re.findall(r"(\d+)\s*", message.text)[0]
-        select_units_count = int(select_units_count)
-
-        if select_units_count > sum(units.units_count):
-            await message.reply(
-                text="<code>у вас нету столько воинов</code>\n"
-                     "<i>подробнее </i>")
-            session.close()
-            return
-        elif select_units_count <= 0:
-            await message.reply(
-                text="<code>слишком мало юнитов</code>\n"
-                     "<i>подробнее </i>")
-            session.close()
-            return
-
-        units_count = list(units.units_count)
-        # remaining_units_count = [
-        #     units_count - select_units_count for units_count, select_units_count in zip(
-        #         units_count, select_units_count
-        #     )]
 
         base_units = ages.Age.get_all_units()
-        new_base_units = [base_units[i] for i in units.units_type if i is not None]
+        current_base_units = [base_units[i] for i in units.units_type if i is not None]
 
-        real_units_count = sum(
-            [i[1].weight * select_units_count for i in enumerate(new_base_units)]
-        )
+        units_count = [i for i in units.units_count if i != 0]
+
+        if not units_count:
+            await callback.answer("У вас нету армии.")
+            session.close()
+            return
+
+        units_count = [i for i in units.units_count]
+        player_unit_str = ""
+        for unit_count in enumerate(units_count):
+            index = unit_count[0]
+            value = unit_count[1]
+
+            if value == 0:
+                continue
+
+            unit_emoji = re.findall(r"\W+", current_base_units[index].name)[0]
+
+            if index == len(units_count)-1:
+                player_unit_str += "x{}{}".format(value, unit_emoji)
+                break
+
+            player_unit_str += "x{}{}, ".format(value, unit_emoji)
+
+        base_campaigns = ages.Age.get_all_campaigns()
+        base_campaign = base_campaigns[territory_index]
+
+        campaign_units_count = [i for i in base_campaign.units_count if i != 0]
+        campaign_units_str = ""
+
+        for unit_count in enumerate(campaign_units_count):
+            index = unit_count[0]
+            value = unit_count[1]
+
+            unit_emoji = re.findall(r"\W+", base_campaign.units_type[index].name)[0]
+
+            if index == len(campaign_units_count) - 1:
+                campaign_units_str += "x{}{}".format(value, unit_emoji)
+                break
+
+            campaign_units_str += "x{}{}, ".format(value, unit_emoji)
 
         msg_text = read_txt_file("text/campaign/start_capture")
-
         await campaign_msg.edit_text(
             text=msg_text.format(
                 base_campaign.name,
-                select_units_count,
-                sum(base_campaign.units_count),
+                player_unit_str,
+                campaign_units_str,
                 base_campaign.territory_size,
                 transaction.Purchase.get_price(base_campaign.income)
             ),
             reply_markup=keyboards.campaigns.kb_start_capture
         )
-        await state.update_data({
-            "select_units_count": select_units_count,
-            "real_units_count": real_units_count
-        })
-        await state.reset_state(with_data=False)
 
     session.close()
 
@@ -327,7 +310,7 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
     if callback.data == "campaign_start_capture":
 
         win_status: bool = capture.Capture(
-            data.get("real_units_count"),
+            units.real_units_count,
             curnt_campaign.real_units_count
         ).is_win()
 
@@ -338,15 +321,16 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
         }
         if not campaign.territory_captures:
             campaign.territory_captures = new_capture
-            units.real_units_count -= data.get("real_units_count")
-            units_count = subtract_nums_list(data.get("select_units_count"), units.units_count)
-            units.units_count = units_count
+            units.real_units_count = 0
+            reset_units_count = [0 for i in units.units_count]
+            units.units_count = reset_units_count
 
         msg_text = read_txt_file("text/campaign/capture_info")
         await campaign_msg.edit_text(
             text=msg_text.format(
                 *timer.Timer.get_left_time(new_capture["timer"])
-            )
+            ),
+            reply_markup=keyboards.campaigns.kb_back_campaign
         )
 
     session.close()

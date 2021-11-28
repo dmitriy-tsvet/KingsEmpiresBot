@@ -136,6 +136,15 @@ class ProgressTree:
         self.tree = tree
 
 
+class Chest:
+    def __init__(self, name: str, price: list, content: list, counts: list, chances: list):
+        self.name = name
+        self.price = fill_in_list(price)
+        self.content = content
+        self.counts = counts
+        self.chances = chances
+
+
 class Age:
     def __init__(self, name: str,
                  next_age_price: list,

@@ -13,7 +13,7 @@ from utils.db_api import db_api, tables
 from utils.classes import transaction, kb_constructor, timer, table_setter, hour_income
 from utils.models import ages
 
-from utils.models import models, base
+from utils.models import base
 from utils.misc.regexps import TownhallRegexp
 
 import re
@@ -49,7 +49,7 @@ async def townhall_command_handler(message: types.Message, state: FSMContext):
             clan_member.clan.name,
         )
 
-    base_age: models.Age = ages.Age.get(townhall.age)
+    base_age: base.Age = ages.Age.get(townhall.age)
     progress_score = hour_income.HourIncome(user_id=user_id).get_progress_score_income()
     if progress.score < 10:
         progress.score += progress_score

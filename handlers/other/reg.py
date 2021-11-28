@@ -12,7 +12,7 @@ from aiogram.dispatcher.filters import IsReplyFilter
 
 from utils.misc.read_file import read_txt_file
 from utils.classes import table_setter, kb_constructor
-from utils.models import models, ages
+from utils.models import ages, base
 from utils.db_api import db_api, tables
 
 from data import config
@@ -45,6 +45,8 @@ async def registration_handler(message: types.Message, middleware_data, state: F
 
             townhall: tables.TownHall = session.db.query(
                 tables.TownHall).filter_by(user_id=user_id).first()
+            buildings: tables.Buildings = session.db.query(
+                tables.Buildings).filter_by(user_id=user_id).first()
             clan_member: tables.ClanMember = session.db.query(
                 tables.ClanMember).filter_by(user_id=user_id).join(tables.Clan).first()
 
@@ -60,13 +62,21 @@ async def registration_handler(message: types.Message, middleware_data, state: F
             age = townhall.age
 
             # age model
-            age_model: models.Age = ages.Age.get(age)
+            age_model: base.Age = ages.Age.get(age)
 
             await state.reset_state(with_data=False)
 
             # keyboard
             kb_townhall = kb_constructor.StandardKeyboard(
                 user_id=user_id).create_townhall_keyboard()
+
+            base_buildings = ages.Age.get_all_buildings()
+            all_population = 0
+            for building_num in buildings.buildings:
+                if type(building_num) is int:
+                    building = base_buildings[building_num]
+                    if type(building) is base.HomeBuilding:
+                        all_population += building.capacity
 
             with open(age_model.townhall_img, 'rb') as sticker:
                 await message.answer_sticker(sticker=sticker)
@@ -76,6 +86,7 @@ async def registration_handler(message: types.Message, middleware_data, state: F
                     townhall.country_name,
                     townhall.age,
                     townhall.population,
+                    all_population,
                     user_clan,
                     user_mention),
                 reply_markup=kb_townhall

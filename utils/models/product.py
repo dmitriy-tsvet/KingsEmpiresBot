@@ -36,6 +36,30 @@ melon = base.ManufactureProduct(
     create_time_sec=2160
 )
 
+meat = base.ManufactureProduct(
+    name="🥩 Говядина",
+    income=144,
+    create_time_sec=2160
+)
+
+chicken = base.ManufactureProduct(
+    name="🍗 Курица",
+    income=144,
+    create_time_sec=2160
+)
+
+socks = base.ManufactureProduct(
+    name="🧦 Носки",
+    income=144,
+    create_time_sec=2160
+)
+
+threads = base.ManufactureProduct(
+    name="🧵 Нитки",
+    income=144,
+    create_time_sec=2160
+)
+
 
 
 

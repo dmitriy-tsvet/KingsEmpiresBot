@@ -31,7 +31,7 @@ class TableSetter:
             user_id=self.user_id,
             country_name=country_name,
             age=age.name,
-            population=100,
+            population=28,
             money=200,
             stock=200,
             diamonds=100,

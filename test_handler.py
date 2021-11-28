@@ -1,5 +1,4 @@
 from utils.db_api import tables, db_api
-from utils.models import models
 import json
 import typing
 import random

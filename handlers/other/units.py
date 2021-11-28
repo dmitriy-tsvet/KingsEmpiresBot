@@ -10,7 +10,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import IsReplyFilter
 from utils.db_api import db_api, tables
-from utils.models import ages, models
+from utils.models import ages
 from utils.misc.read_file import read_txt_file
 
 from utils.misc import regexps
@@ -47,7 +47,7 @@ async def units_handler(message: types.Message, state: FSMContext):
 
     msg_text = read_txt_file("text/units/units")
     unit_msg = await message.answer(
-        text=msg_text.format(sum(units.units_count), text),
+        text=msg_text.format(text),
         reply_markup=keyboard
     )
 
@@ -60,7 +60,7 @@ async def units_handler(message: types.Message, state: FSMContext):
     session.close()
 
 
-@dp.callback_query_handler(regexp=regexps.Units.back)
+@dp.callback_query_handler(regexp=regexps.UnitsRegexp.back)
 async def back_units_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
@@ -165,12 +165,12 @@ async def reply_menu_handler(message: types.Message, state: FSMContext):
             units_num = []
             for queue in creation_queue:
                 queue_index = creation_queue.index(queue)
+
                 if queue["unit_num"] == unit_num:
-                    creation_queue.remove(queue)
                     time_left = timer.Timer.get_left_time_sec(queue["timer"])
-                    new_queue["creation_count"] += creating_count
+                    new_queue["creation_count"] += queue["creation_count"]
                     new_queue["timer"] += time_left
-                    creation_queue.insert(queue_index, new_queue)
+                    creation_queue[queue_index] = new_queue
                     units.creation_queue = creation_queue
 
                 units_num.append(queue["unit_num"])
@@ -194,7 +194,7 @@ async def reply_menu_handler(message: types.Message, state: FSMContext):
                 user_id=user_id).create_units_keyboard()
             msg_text = read_txt_file("text/units/units")
             await unit_msg.edit_text(
-                text=msg_text.format(sum(units.units_count), text),
+                text=msg_text.format(text),
                 reply_markup=keyboard
             )
         else:

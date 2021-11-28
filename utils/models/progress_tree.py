@@ -15,10 +15,14 @@ bronze_progress_tree = [
     [technology.bronze_home_3, None, technology.bronze_home_2],
 ]
 
-# iron_progress_tree = [
-#     [None, technology.bronze_home, None],
-#     [technology.bronze_pottery, technology.bronze_sawmil, technology.bronze_spearman],
-#     [technology.bronze_plantation, technology.bronze_winery, technology.bronze_archer],
-# ]
-#
+iron_progress_tree = [
+    [None, technology.IronHome_1, None],
+    [technology.IronFoundry, None, technology.IronForger],
+    [technology.IronLegionary, None, technology.IronRider],
+    [None, technology.IronFelting, None],
+    [None, technology.IronHome_2, None],
+    [technology.IronButcher, None, technology.IronJewelry],
+    [None, technology.IronHome_3, None],
+]
+
 

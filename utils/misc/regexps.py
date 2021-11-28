@@ -16,7 +16,7 @@ class ClanRegexp:
     back = r"back_clan"
     invite = r"Пригласить"
     member = r"clan_member|leave_clan|yes_leave_clan|no_leave_clan"
-    donate = r"клан\s+(казна|армия)\s+(\d+)"
+    donate = r"[Кк]инуть\s+(\d+)"
     contest = r"start_search_contest|cancel_search_contest"
 
 
@@ -47,11 +47,17 @@ class CampaignRegexp:
     back = r"back_campaign"
 
 
-class Market:
+class MarketRegexp:
     menu = r"market_page_(\d+)|market_product_(\d+)|my_products"
     current_product = r"buy_product|delete_product"
     back = r"back_market"
 
 
-class Units:
+class UnitsRegexp:
     back = r"back_units"
+
+
+class ShopRegexp:
+    menu = r"shop_chest|shop_money|shop_stock|shop_donate"
+    buy = r"get_chest_(\d+)|shop_buy_money_(\d+)_for_(\d+)|shop_buy_stock_(\d+)_for_(\d+)|buy_chest"
+    back = r"back_shop|back_chest"

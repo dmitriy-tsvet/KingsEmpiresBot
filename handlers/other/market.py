@@ -8,7 +8,7 @@ from utils.misc.read_file import read_txt_file
 from utils.classes import kb_constructor, timer
 from utils.misc import regexps
 from utils.db_api import db_api, tables
-from utils.models import models, ages
+from utils.models import ages
 from utils.misc.operation_with_lists import subtract_nums_list, add_nums_list
 
 import states
@@ -35,7 +35,7 @@ async def market_handler(message: types.Message, state: FSMContext):
     })
 
 
-@dp.callback_query_handler(regexp=regexps.Market.back)
+@dp.callback_query_handler(regexp=regexps.MarketRegexp.back)
 async def products_list_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
@@ -51,11 +51,11 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
             text=market_msg.html_text,
             reply_markup=market_msg.reply_markup,
         )
-        # await states.Market.products_list.set()
-        return
+
+    await callback.answer()
 
 
-@dp.callback_query_handler(regexp=regexps.Market.menu)
+@dp.callback_query_handler(regexp=regexps.MarketRegexp.menu)
 async def products_list_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
 
@@ -138,11 +138,11 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
     await callback.answer()
 
 
-@dp.callback_query_handler(regexp=regexps.Market.current_product)
+@dp.callback_query_handler(regexp=regexps.MarketRegexp.current_product)
 async def products_list_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
-    product_id = data.get("product_id")
+    market_product_id = data.get("product_id")
 
     market_msg: types.Message = data.get("market_msg")
     if callback.data == "back_products_list":
@@ -154,7 +154,7 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
         return
     session = db_api.CreateSession()
     sell_product: tables.Market = session.db.query(tables.Market).filter_by(
-        id=product_id
+        id=market_product_id
     ).first()
 
     seller_townhall_table: tables.TownHall = session.db.query(
@@ -199,11 +199,14 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
 
             for product in buyer_manufacture_table_storage:
                 index = buyer_manufacture_table_storage.index(product)
-                if product["product_id"] == base_sell_product_id:
-                    product["count"] += sell_product.count
+                product_id = product["product_id"]
+                product_count = product["count"]
+
+                if product_id == base_sell_product_id:
+                    product_count += sell_product.count
                     buyer_manufacture_table_storage[index] = {
-                        "product_id": product["product_id"],
-                        "count": product["count"]
+                        "product_id": product_id,
+                        "count": product_count
                     }
 
             if base_sell_product_id not in buyer_products_id:
@@ -215,7 +218,7 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
                 )
             buyer_manufacture_table.storage = buyer_manufacture_table_storage
 
-            session.db.query(tables.Market).filter_by(id=product_id).delete()
+            session.db.query(tables.Market).filter_by(id=market_product_id).delete()
             session.db.commit()
 
             keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)
@@ -257,12 +260,15 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
         ]
 
         for product in seller_manufacture_table_storage:
+            product_id = product["product_id"]
+            product_count = product["count"]
+
             index = seller_manufacture_table_storage.index(product)
-            if product["product_id"] == base_sell_product_id:
-                product["count"] += sell_product.count
+            if product_id == base_sell_product_id:
+                product_count += sell_product.count
                 seller_manufacture_table_storage[index] = {
-                    "product_id": product["product_id"],
-                    "count": product["count"]
+                    "product_id": product_id,
+                    "count": product_count
                 }
 
         if base_sell_product_id not in seller_products_id:
@@ -276,7 +282,7 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
         seller_manufacture_table.storage = seller_manufacture_table_storage
 
         session.db.query(tables.Market).filter_by(
-            id=product_id).delete()
+            id=market_product_id).delete()
         session.db.commit()
 
         keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)

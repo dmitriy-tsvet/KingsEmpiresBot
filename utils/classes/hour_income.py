@@ -1,7 +1,7 @@
 import typing
 import time
 from utils.db_api import db_api, tables
-from utils.models import models, ages, base
+from utils.models import ages, base
 from utils.classes import maths, timer
 import json
 import typing

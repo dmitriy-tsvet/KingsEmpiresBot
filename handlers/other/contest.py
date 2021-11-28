@@ -63,8 +63,9 @@ async def territory_handler(message: types.Message, state: FSMContext):
                 if len(recent_log) >= 6:
                     recent_log.remove(recent_log[0])
 
+                clans = [contest.clan_id_1, contest.clan_id_2]
                 new_log = "{} {} ({}) захватил(а) {}".format(
-                    color[contest.colors[clan_member.clan_id]],
+                    color[contest.colors[clans.index(clan_member.clan_id)]],
                     message.from_user.get_mention(), clan_member.clan.name,
                     contest.territory_names[territory_captures.index(capture)]
                 )
@@ -89,8 +90,9 @@ async def territory_handler(message: types.Message, state: FSMContext):
                 if len(recent_log) >= 6:
                     recent_log.remove(recent_log[0])
 
+                clans = [contest.clan_id_1, contest.clan_id_2]
                 new_log = "{} {} ({}) проиграл(а) на {}".format(
-                    color[contest.colors[clan_member.clan_id]],
+                    color[contest.colors[clans.index(clan_member.clan_id)]],
                     message.from_user.get_mention(), clan_member.clan.name,
                     contest.territory_names[territory_captures.index(capture)]
                 )
@@ -344,8 +346,9 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
         if len(recent_log) >= 6:
             recent_log.remove(recent_log[0])
 
+        clans = [contest.clan_id_1, contest.clan_id_2]
         new_log = "{} {} ({}) <b>начал(а) захват</b> {}".format(
-            color[contest.colors[clan_member.clan_id]],
+            color[contest.colors[clans.index(clan_member.clan_id)]],
             callback.from_user.get_mention(), clan_member.clan.name,
             contest.territory_names[territory_index]
         )
