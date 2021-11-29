@@ -1214,3 +1214,178 @@ Traceback (most recent call last):
     next_age_name = list_ages[list_ages.index(townhall.age)+1]
 IndexError: list index out of range
 200 0
+executor.py [LINE:362] #INFO     [2021-11-29 09:31:42,855]  Bot: Kings of Empires [@KingsEmpiresBot]
+executor.py [LINE:358] #WARNING  [2021-11-29 09:31:43,055]  Updates were skipped successfully.
+dispatcher.py [LINE:360] #INFO     [2021-11-29 09:31:43,155]  Start polling.
+base_events.py [LINE:1738] #ERROR    [2021-11-29 10:17:17,655]  Task exception was never retrieved
+future: <Task finished name='Task-1202' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=OperationalError('(sqlite3.OperationalError) database is locked')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1771, in _execute_context
+    self.dialect.do_execute(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/default.py", line 717, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: database is locked
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/kingbot/handlers/other/townhall.py", line 510, in progress_handler
+    session.db.commit()
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 1428, in commit
+    self._transaction.commit(_to_root=self.future)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 829, in commit
+    self._prepare_impl()
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 808, in _prepare_impl
+    self.session.flush()
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 3298, in flush
+    self._flush(objects)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 3438, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/util/langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/util/compat.py", line 207, in raise_
+    raise exception
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 3398, in _flush
+    flush_context.execute()
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/unitofwork.py", line 456, in execute
+    rec.execute(self)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/unitofwork.py", line 630, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/persistence.py", line 234, in save_obj
+    _emit_update_statements(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/persistence.py", line 998, in _emit_update_statements
+    c = connection._execute_20(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1583, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/sql/elements.py", line 323, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1452, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1814, in _execute_context
+    self._handle_dbapi_exception(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1995, in _handle_dbapi_exception
+    util.raise_(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/util/compat.py", line 207, in raise_
+    raise exception
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1771, in _execute_context
+    self.dialect.do_execute(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/default.py", line 717, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) database is locked
+[SQL: UPDATE progress SET score=?, tree=? WHERE progress.id = ?]
+[parameters: (0, '[[null, 4, null], [4, null, 4], [null, 1, null], [0, 0, 0], [null, 0, null], [0, 0, 0], [0, null, 0]]', 98)]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+base_events.py [LINE:1738] #ERROR    [2021-11-29 10:23:39,571]  Task exception was never retrieved
+future: <Task finished name='Task-1986' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=AttributeError("'NoneType' object has no attribute 'edit_text'")>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/kingbot/handlers/other/townhall.py", line 102, in townhall_back_handler
+    await townhall_msg.edit_text(
+AttributeError: 'NoneType' object has no attribute 'edit_text'
+base_events.py [LINE:1738] #ERROR    [2021-11-29 10:24:19,756]  Task exception was never retrieved
+future: <Task finished name='Task-1995' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=AttributeError("'NoneType' object has no attribute 'edit_text'")>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 286, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/kingbot/handlers/other/townhall.py", line 102, in townhall_back_handler
+    await townhall_msg.edit_text(
+AttributeError: 'NoneType' object has no attribute 'edit_text'
+base_events.py [LINE:1738] #ERROR    [2021-11-29 11:36:10,456]  Task exception was never retrieved
+future: <Task finished name='Task-3488' coro=<Dispatcher._process_polling_updates() done, defined at /usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py:409> exception=OperationalError('(sqlite3.OperationalError) database is locked')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1771, in _execute_context
+    self.dialect.do_execute(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/default.py", line 717, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: database is locked
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 417, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 238, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/dispatcher.py", line 259, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "/usr/local/lib/python3.9/dist-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/kingbot/handlers/other/townhall.py", line 53, in townhall_command_handler
+    progress_score = hour_income.HourIncome(user_id=user_id).get_progress_score_income()
+  File "/home/kingbot/utils/classes/hour_income.py", line 32, in get_progress_score_income
+    session.close()
+  File "/home/kingbot/utils/db_api/db_api.py", line 17, in close
+    self.db.commit()
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 1428, in commit
+    self._transaction.commit(_to_root=self.future)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 829, in commit
+    self._prepare_impl()
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 808, in _prepare_impl
+    self.session.flush()
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 3298, in flush
+    self._flush(objects)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 3438, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/util/langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/util/compat.py", line 207, in raise_
+    raise exception
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/session.py", line 3398, in _flush
+    flush_context.execute()
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/unitofwork.py", line 456, in execute
+    rec.execute(self)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/unitofwork.py", line 630, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/persistence.py", line 234, in save_obj
+    _emit_update_statements(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/orm/persistence.py", line 998, in _emit_update_statements
+    c = connection._execute_20(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1583, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/sql/elements.py", line 323, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1452, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1814, in _execute_context
+    self._handle_dbapi_exception(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1995, in _handle_dbapi_exception
+    util.raise_(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/util/compat.py", line 207, in raise_
+    raise exception
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/base.py", line 1771, in _execute_context
+    self.dialect.do_execute(
+  File "/usr/local/lib/python3.9/dist-packages/sqlalchemy/engine/default.py", line 717, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) database is locked
+[SQL: UPDATE progress SET score_timer=? WHERE progress.id = ?]
+[parameters: (1638207365, 17)]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
