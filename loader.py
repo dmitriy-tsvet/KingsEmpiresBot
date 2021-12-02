@@ -5,10 +5,10 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from data import config
 
 
-PROXY_URL = "socks5://45.89.18.242:11951"
-PROXY_AUTH = aiohttp.BasicAuth(
-    login="xH6y1z", password="871xvl90fD"
-)
+# PROXY_URL = ""
+# PROXY_AUTH = aiohttp.BasicAuth(
+#     login="", password=""
+# )
 
 
 bot = Bot(

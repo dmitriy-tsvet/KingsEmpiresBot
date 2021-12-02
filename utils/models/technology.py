@@ -2,133 +2,133 @@ from enum import Enum
 from utils.models import base, home, stock_building, unit, manufacture_building
 import typing
 
-stone_home = base.Technology(
-    name=home.stone_home.name,
+StoneHome = base.Technology(
+    name=home.StoneHome.name,
     unlock_price=[0, 0],
     unlock_score=3,
-    unlock_technology=home.stone_home
+    unlock_technology=home.StoneHome
 )
 
-stone_hut = base.Technology(
-    name=stock_building.stone_hut.name,
+StoneHut = base.Technology(
+    name=stock_building.StoneHut.name,
     unlock_price=[0, 0],
     unlock_score=3,
-    unlock_technology=stock_building.stone_hut
+    unlock_technology=stock_building.StoneHut
 )
 
-stone_militia = base.Technology(
-    name=unit.stone_militia.name,
+StoneMilitia = base.Technology(
+    name=unit.StoneMilitia.name,
     unlock_price=[0, 0],
     unlock_score=3,
-    unlock_technology=unit.stone_militia
+    unlock_technology=unit.StoneMilitia
 )
 
 
-bronze_home_1 = base.Technology(
-    name=home.bronze_home_1.name,
+BronzeHome_1 = base.Technology(
+    name=home.BronzeHome_1.name,
     unlock_price=[50, 50],
     unlock_score=4,
-    unlock_technology=home.bronze_home_1
+    unlock_technology=home.BronzeHome_1
 )
 
-bronze_home_2 = base.Technology(
-    name=home.bronze_home_2.name,
+BronzeHome_2 = base.Technology(
+    name=home.BronzeHome_2.name,
     unlock_price=[0, 0],
     unlock_score=4,
-    unlock_technology=home.bronze_home_2
+    unlock_technology=home.BronzeHome_2
 )
 
-bronze_home_3 = base.Technology(
-    name=home.bronze_home_3.name,
+BronzeHome_3 = base.Technology(
+    name=home.BronzeHome_3.name,
     unlock_price=[0, 0],
     unlock_score=1,
-    unlock_technology=home.bronze_home_3
+    unlock_technology=home.BronzeHome_3
 )
 
 
-bronze_spearman = base.Technology(
-    name=unit.bronze_swordsman.name,
+BronzeSwordsman = base.Technology(
+    name=unit.BronzeSwordsman.name,
     unlock_price=[50, 50],
     unlock_score=5,
-    unlock_technology=unit.bronze_swordsman
+    unlock_technology=unit.BronzeSwordsman
 )
 
-bronze_archer = base.Technology(
-    name=unit.bronze_archer.name,
+BronzeArcher = base.Technology(
+    name=unit.BronzeArcher.name,
     unlock_price=[50, 50],
     unlock_score=5,
-    unlock_technology=unit.bronze_archer
+    unlock_technology=unit.BronzeArcher
 )
 
-bronze_sawmil = base.Technology(
-    name=stock_building.bronze_sawmill.name,
+BronzeSawmill = base.Technology(
+    name=stock_building.BronzeSawmill.name,
     unlock_price=[50, 50],
     unlock_score=6,
-    unlock_technology=stock_building.bronze_sawmill
+    unlock_technology=stock_building.BronzeSawmill
 )
 
-bronze_forager = base.Technology(
-    name=stock_building.bronze_forager.name,
+BronzeForager = base.Technology(
+    name=stock_building.BronzeForager.name,
     unlock_price=[0, 0],
     unlock_score=2,
-    unlock_technology=stock_building.bronze_forager
+    unlock_technology=stock_building.BronzeForager
 )
 
-bronze_winery = base.Technology(
-    name=stock_building.bronze_winery.name,
+BronzeWinery = base.Technology(
+    name=stock_building.BronzeWinery.name,
     unlock_price=[50, 50],
     unlock_score=6,
-    unlock_technology=stock_building.bronze_winery
+    unlock_technology=stock_building.BronzeWinery
 )
 
-bronze_pottery = base.Technology(
-    name=manufacture_building.bronze_pottery.name,
+BronzePottery = base.Technology(
+    name=manufacture_building.BronzePottery.name,
     unlock_price=[50, 50],
     unlock_score=8,
-    unlock_technology=manufacture_building.bronze_pottery
+    unlock_technology=manufacture_building.BronzePottery
 )
 
-bronze_plantation = base.Technology(
-    name=manufacture_building.bronze_plantation.name,
+BronzePlantation = base.Technology(
+    name=manufacture_building.BronzePlantation.name,
     unlock_price=[50, 50],
     unlock_score=8,
-    unlock_technology=manufacture_building.bronze_plantation
+    unlock_technology=manufacture_building.BronzePlantation
 )
 
 IronHome_1 = base.Technology(
-    name=home.iron_home_1.name,
+    name=home.IronHome_1.name,
     unlock_price=[250, 100],
     unlock_score=13,
-    unlock_technology=home.iron_home_1
+    unlock_technology=home.IronHome_1
 )
 
 IronHome_2 = base.Technology(
-    name=home.iron_home_2.name,
+    name=home.IronHome_2.name,
     unlock_price=[600, 1250],
     unlock_score=13,
-    unlock_technology=home.iron_home_2
+    unlock_technology=home.IronHome_2
 )
 
 IronHome_3 = base.Technology(
-    name=home.iron_home_3.name,
+    name=home.IronHome_3.name,
     unlock_price=[50, 50],
     unlock_score=4,
-    unlock_technology=home.iron_home_3
+    unlock_technology=home.IronHome_3
 )
 
 IronLegionary = base.Technology(
-    name=unit.iron_legionary.name,
+    name=unit.IronLegionary.name,
     unlock_price=[0, 0],
     unlock_score=14,
-    unlock_technology=unit.iron_legionary
+    unlock_technology=unit.IronLegionary
 )
 
 
 IronRider = base.Technology(
-    name=unit.iron_rider.name,
+    name=unit.IronRider.name,
     unlock_price=[1500, 2000],
     unlock_score=22,
-    unlock_technology=unit.iron_rider
+    unlock_technology=unit.IronRider
 )
 
 IronFoundry = base.Technology(

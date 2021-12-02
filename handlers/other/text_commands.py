@@ -1,15 +1,13 @@
-from loader import dp, bot
+from loader import dp
 from aiogram import types
 from aiogram.dispatcher import filters
 from aiogram.dispatcher import FSMContext
 import re
 import typing
-from utils.misc.read_file import read_txt_file
-from utils.classes import timer, transaction, kb_constructor
+from utils.classes import timer, kb_constructor, regexps
 
 from utils.models import ages, clan_building, base
 from utils.db_api import tables, db_api
-from utils.misc import regexps
 from utils.misc.operation_with_lists import subtract_nums_list, add_nums_list
 
 sell_product = r"продать\s+(\d+)\s+(.*)\s+за\s+(\d+)"

@@ -1,26 +1,16 @@
-import typing
-
-import keyboards
-import states
 import re
-import copy
-import random
 import time
 
 from loader import dp
 from aiogram import types
-from aiogram.dispatcher import filters
-from aiogram import exceptions
 
 from aiogram.dispatcher import FSMContext
 from utils.db_api import tables, db_api
 from utils.models import ages
 from utils.classes import kb_constructor, timer
 from utils.models import base
-from utils.misc.regexps import ManufactureRegexp
+from utils.classes.regexps import ManufactureRegexp
 from utils.misc.read_file import read_txt_file
-
-from data import config
 
 
 @dp.message_handler(state="*", commands="manufacture")

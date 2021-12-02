@@ -168,7 +168,6 @@ class Contest(Base):
 
 
 def create_session() -> Session:
-    # connect_args={'timeout': 1}
     sqlite_file_path = "database.db"
     engine = create_engine("sqlite:///{}".format(sqlite_file_path))
     NewSession = sessionmaker(bind=engine)
@@ -176,38 +175,3 @@ def create_session() -> Session:
     session: Session = NewSession()
 
     return session
-
-
-# class UserData:
-#     def __init__(self, user_id: int):
-#         self.user_id = user_id
-#
-#         self.user_table = None
-#         self.townhall_table = None
-#
-#         self.session = None
-#         self.query = None
-#
-#     def open_session(self):
-#         self.session = create_session()
-#
-#         self.query = self.session.query(User).filter(User.id == self.user_id).first()
-#         self.user_table = self.query
-#         self.townhall_table = self.query.townhall[0]
-#
-#     def insert_data(self, value):
-#         self.session.add(value)
-#
-#     def commit(self):
-#         self.session.commit()
-#
-#     def close_session(self):
-#         self.commit()
-#         self.session.close()
-
-
-
-
-
-# if __name__ == "__main__":
-#     select()

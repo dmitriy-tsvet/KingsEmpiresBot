@@ -14,10 +14,10 @@ class Age(Enum):
         buildings=[
             builder_home.builder_home,
             clan_building.clan_building,
-            home.stone_home,
-            stock_building.stone_hut,
+            home.StoneHome,
+            stock_building.StoneHut,
             ],
-        units=[unit.stone_militia],
+        units=[unit.StoneMilitia],
         campaigns=[i.value for i in campaigns.Campaigns]
     )
 
@@ -27,16 +27,16 @@ class Age(Enum):
         progress_tree=progress_tree.bronze_progress_tree,
         next_age_price=[1120, ],
         buildings=[
-            home.bronze_home_1,
-            home.bronze_home_2,
-            home.bronze_home_3,
-            stock_building.bronze_sawmill,
-            stock_building.bronze_forager,
-            stock_building.bronze_winery,
-            manufacture_building.bronze_pottery,
-            manufacture_building.bronze_plantation
+            home.BronzeHome_1,
+            home.BronzeHome_2,
+            home.BronzeHome_3,
+            stock_building.BronzeSawmill,
+            stock_building.BronzeForager,
+            stock_building.BronzeWinery,
+            manufacture_building.BronzePottery,
+            manufacture_building.BronzePlantation
         ],
-        units=[unit.bronze_swordsman, unit.bronze_archer],
+        units=[unit.BronzeSwordsman, unit.BronzeArcher],
         campaigns=[]
     )
 
@@ -46,16 +46,16 @@ class Age(Enum):
         progress_tree=progress_tree.iron_progress_tree,
         next_age_price=[1120, ],
         buildings=[
-            home.iron_home_1,
-            home.iron_home_2,
-            home.iron_home_3,
+            home.IronHome_1,
+            home.IronHome_2,
+            home.IronHome_3,
             stock_building.IronFoundry,
             stock_building.IronJewelry,
             stock_building.IronFelting,
             manufacture_building.IronForger,
             manufacture_building.IronButcher
         ],
-        units=[unit.iron_legionary, None, unit.iron_rider],
+        units=[unit.IronLegionary, None, unit.IronRider],
         campaigns=[]
     )
 
@@ -65,53 +65,11 @@ class Age(Enum):
         progress_tree=progress_tree.iron_progress_tree,
         next_age_price=[1120, ],
         buildings=[
-            home.iron_home_1,
+            home.IronHome_1,
         ],
-        units=[unit.bronze_swordsman, unit.bronze_archer],
+        units=[unit.IronLegionary, unit.IronRider],
         campaigns=[]
     )
-
-    # early_middle_age = models.Age(
-    #     name="Раннее Средневековье",
-    #     rank="Барон",
-    #     townhall_img="early_middle",
-    #     buildings_img=["early_middle_bakery", "early_middle_forge"],
-    #     next_age_price=[7205, 2700],
-    #     citizen=citizens.early_middle_citizen,
-    #     home_building=homes.early_middle_home,
-    #     food_building=buildings.early_middle_bakery,
-    #     stock_building=buildings.early_middle_forge,
-    #     units=[units.archer, units.rider],
-    #     territories=[territories.muderia, territories.brovadia, territories.hitopia,  ]
-    # )
-    #
-    # high_middle_age = models.Age(
-    #     name="Высокое Средневековье",
-    #     rank="Граф",
-    #     townhall_img="high_middle",
-    #     buildings_img=["high_middle_farm", "high_middle_herbalist"],
-    #     next_age_price=[9105, 4480],
-    #     citizen=citizens.high_middle_citizen,
-    #     home_building=homes.high_middle_home,
-    #     food_building=buildings.high_middle_farm,
-    #     stock_building=buildings.high_middle_herbalist,
-    #     units=[units.healer, units.mercenary],
-    #     territories=[territories.muderia, territories.brovadia, territories.seligia, ]
-    # )
-    #
-    # late_middle_age = models.Age(
-    #     name="Позднее Средневековье",
-    #     rank="Король",
-    #     townhall_img="late_middle",
-    #     buildings_img=["late_middle_brewery", "late_middle_foundry"],
-    #     next_age_price=[13200, 8705],
-    #     citizen=citizens.late_middle_citizen,
-    #     home_building=homes.late_middle_home,
-    #     food_building=buildings.late_middle_brewery,
-    #     stock_building=buildings.late_middle_foundry,
-    #     units=[units.halberdist, units.crossbowman, units.paladin],
-    #     territories=[territories.muderia, territories.brovadia, territories.seligia, ]
-    # )
 
     @staticmethod
     def get_all_ages():

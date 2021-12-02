@@ -12,7 +12,7 @@ from loader import dp
 from utils.classes import kb_constructor, paint, capture
 from utils.db_api import tables, db_api
 from utils.misc.read_file import read_txt_file
-from utils.misc.regexps import ContestRegexp
+from utils.classes.regexps import ContestRegexp
 from utils.classes import timer
 
 color = {

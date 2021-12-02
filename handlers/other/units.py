@@ -1,10 +1,6 @@
-import states
 import re
-import json
-import time
 
 from loader import dp
-from data import config
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -13,8 +9,7 @@ from utils.db_api import db_api, tables
 from utils.models import ages
 from utils.misc.read_file import read_txt_file
 
-from utils.misc import regexps
-from utils.classes import kb_constructor, timer, transaction
+from utils.classes import kb_constructor, timer, transaction, regexps
 
 import keyboards
 

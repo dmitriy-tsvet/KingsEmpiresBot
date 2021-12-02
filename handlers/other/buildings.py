@@ -1,19 +1,17 @@
-import states
 import re
 import random
 import typing
 
 from loader import dp
-from data import config
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram import exceptions
 
 from utils.misc.read_file import read_txt_file
-from utils.misc.regexps import BuildingsRegexp
+from utils.classes.regexps import BuildingsRegexp
 from utils.db_api import tables, db_api
-from utils.models import ages, base, buildings_territory, clan_building
+from utils.models import ages, base, clan_building
 from utils.classes import kb_constructor, timer, transaction
 
 import keyboards

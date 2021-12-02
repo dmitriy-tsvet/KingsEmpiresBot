@@ -3,7 +3,6 @@ import typing
 import keyboards
 import states
 import re
-import copy
 import random
 
 from loader import dp
@@ -14,14 +13,10 @@ from aiogram import exceptions
 from aiogram.dispatcher import FSMContext
 from utils.misc.read_file import read_txt_file
 from utils.db_api import tables, db_api
-from utils.models import ages, base
-from utils.classes import kb_constructor, timer, transaction
-from utils.war_system import fight
-from utils.misc.operation_with_lists import subtract_nums_list
-from sqlalchemy import asc, desc, and_
-from utils.misc.regexps import ClanRegexp
-
-from data import config
+from utils.models import ages
+from utils.classes import kb_constructor, timer
+from sqlalchemy import desc, and_
+from utils.classes.regexps import ClanRegexp
 
 
 @dp.message_handler(state="*", commands="clan")

@@ -5,13 +5,10 @@ from aiogram import exceptions
 
 from utils.misc.read_file import read_txt_file
 
-from utils.classes import kb_constructor, timer
-from utils.misc import regexps
+from utils.classes import kb_constructor, timer, regexps
 from utils.db_api import db_api, tables
 from utils.models import ages
-from utils.misc.operation_with_lists import subtract_nums_list, add_nums_list
 
-import states
 import re
 
 

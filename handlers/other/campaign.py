@@ -2,21 +2,16 @@ import re
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import IsReplyFilter
 from aiogram import exceptions
-from sqlalchemy import or_
 
-import random
 import keyboards
-import states
 from loader import dp
 from utils.classes import kb_constructor, paint, capture, transaction
 from utils.db_api import tables, db_api
 from utils.misc.read_file import read_txt_file
-from utils.misc.regexps import CampaignRegexp
+from utils.classes.regexps import CampaignRegexp
 from utils.classes import timer
-from utils.models import base, ages
-from utils.misc.operation_with_lists import subtract_nums_list
+from utils.models import ages
 
 
 @dp.message_handler(state="*", commands="campaign")
