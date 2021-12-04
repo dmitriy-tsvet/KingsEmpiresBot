@@ -189,7 +189,7 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
 
 
 @dp.callback_query_handler(regexp=TownhallRegexp.storage)
-async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
+async def townhall_storage_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
 
@@ -252,7 +252,7 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(regexp=TownhallRegexp.progress)
-async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
+async def townhall_progress_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
 
@@ -421,7 +421,6 @@ async def progress_handler(callback: types.CallbackQuery, state: FSMContext):
             reply_markup=keyboard
         )
 
-    # unlock all
     elif callback.data == "upgrade_all":
         branch_index = data.get("branch_index")
         technology_index = data.get("technology_index")

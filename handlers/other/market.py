@@ -13,12 +13,10 @@ import re
 
 
 @dp.message_handler(state="*", commands="market")
-async def market_handler(message: types.Message, state: FSMContext):
+async def market_command_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     keyboard = kb_constructor.PaginationKeyboard(
-        user_id=user_id
-    )
-    keyboard = keyboard.create_market_keyboard()
+        user_id=user_id).create_market_keyboard()
 
     msg_text = read_txt_file("text/market/list_products")
     market_msg = await message.answer(
@@ -33,15 +31,14 @@ async def market_handler(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(regexp=regexps.MarketRegexp.back)
-async def products_list_handler(callback: types.CallbackQuery, state: FSMContext):
+async def back_market_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
+    market_msg: types.Message = data.get("market_msg")
 
     if data.get("user_id") != user_id:
         msg_text = read_txt_file("text/hints/foreign_button")
         return await callback.answer(text=msg_text)
-
-    market_msg: types.Message = data.get("market_msg")
 
     if callback.data == "back_market":
         await market_msg.edit_text(
@@ -53,16 +50,14 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
 
 
 @dp.callback_query_handler(regexp=regexps.MarketRegexp.menu)
-async def products_list_handler(callback: types.CallbackQuery, state: FSMContext):
+async def market_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
-
     user_id = callback.from_user.id
+    market_msg: types.Message = data.get("market_msg")
 
     if data.get("user_id") != user_id:
         msg_text = read_txt_file("text/hints/foreign_button")
         return await callback.answer(msg_text)
-
-    market_msg: types.Message = data.get("market_msg")
 
     page_move = re.findall(r"page_(\d+)", callback.data)
     select_product = re.findall(r"market_product_(\d+)", callback.data)
@@ -136,7 +131,7 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
 
 
 @dp.callback_query_handler(regexp=regexps.MarketRegexp.current_product)
-async def products_list_handler(callback: types.CallbackQuery, state: FSMContext):
+async def market_product_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     market_product_id = data.get("product_id")
@@ -147,8 +142,8 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
             text=market_msg.html_text,
             reply_markup=market_msg.reply_markup,
         )
-        # await states.Market.products_list.set()
         return
+
     session = db_api.CreateSession()
     sell_product: tables.Market = session.db.query(tables.Market).filter_by(
         id=market_product_id
@@ -173,13 +168,13 @@ async def products_list_handler(callback: types.CallbackQuery, state: FSMContext
         if sell_product is None:
             await callback.answer("упс, кто-то уже купил")
 
-            keyboard = kb_constructor.PaginationKeyboard(user_id=user_id)
-            keyboard = keyboard.create_market_keyboard()
+            keyboard = kb_constructor.PaginationKeyboard(
+                user_id=user_id).create_market_keyboard()
+
             await market_msg.edit_text(
                 text=market_msg.html_text,
                 reply_markup=keyboard[0],
             )
-
             return session.close()
 
         if buyer_townhall_table.money >= sell_product.price:

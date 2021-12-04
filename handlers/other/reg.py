@@ -1,12 +1,9 @@
 import re
 import states
-import random
-import json
 
 from loader import dp
 
 from aiogram import types
-from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import IsReplyFilter
 
@@ -14,8 +11,6 @@ from utils.misc.read_file import read_txt_file
 from utils.classes import table_setter, kb_constructor
 from utils.models import ages, base
 from utils.db_api import db_api, tables
-
-from data import config
 
 
 @dp.message_handler(IsReplyFilter(True), state=states.Reg.input_name_country)
@@ -50,6 +45,10 @@ async def registration_handler(message: types.Message, middleware_data, state: F
             clan_member: tables.ClanMember = session.db.query(
                 tables.ClanMember).filter_by(user_id=user_id).join(tables.Clan).first()
 
+            age_model: base.Age = ages.Age.get(townhall.age)
+
+            await state.reset_state(with_data=False)
+
             if clan_member is None:
                 msg_text = read_txt_file("text/townhall/townhall_none_clan")
                 user_clan = ""
@@ -58,17 +57,6 @@ async def registration_handler(message: types.Message, middleware_data, state: F
                 user_clan = "{}".format(
                     clan_member.clan.name,
                 )
-
-            age = townhall.age
-
-            # age model
-            age_model: base.Age = ages.Age.get(age)
-
-            await state.reset_state(with_data=False)
-
-            # keyboard
-            kb_townhall = kb_constructor.StandardKeyboard(
-                user_id=user_id).create_townhall_keyboard()
 
             base_buildings = ages.Age.get_all_buildings()
             all_population = 0
@@ -81,7 +69,9 @@ async def registration_handler(message: types.Message, middleware_data, state: F
             with open(age_model.townhall_img, 'rb') as sticker:
                 await message.answer_sticker(sticker=sticker)
 
-            edit_msg = await message.answer(
+            keyboard = kb_constructor.StandardKeyboard(
+                user_id=user_id).create_townhall_keyboard()
+            townhall_msg = await message.answer(
                 text=msg_text.format(
                     townhall.country_name,
                     townhall.age,
@@ -89,10 +79,10 @@ async def registration_handler(message: types.Message, middleware_data, state: F
                     all_population,
                     user_clan,
                     user_mention),
-                reply_markup=kb_townhall
+                reply_markup=keyboard
             )
             await state.set_data({
                 "user_id": user_id,
-                "townhall_msg": edit_msg,
+                "townhall_msg": townhall_msg,
             })
             session.close()

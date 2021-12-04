@@ -17,13 +17,8 @@ btn_progress = types.InlineKeyboardButton(
     text="✨ прогресс", callback_data="progress"
 )
 
-
 kb_progress = types.InlineKeyboardMarkup()
 
-# btn_age = types.InlineKeyboardButton(
-#     text="▲ Век", callback_data="next_age"
-# )
-#
 
 btn_one_progress = types.InlineKeyboardButton(
     text="+ 🧬", callback_data="upgrade_one"
@@ -50,5 +45,3 @@ btn_next_age = types.InlineKeyboardButton(
 )
 
 kb_storage = types.InlineKeyboardMarkup()
-# kb_storage.add(btn_back_townhall)
-

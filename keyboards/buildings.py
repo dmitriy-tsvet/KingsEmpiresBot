@@ -2,12 +2,6 @@ from aiogram import types
 
 kb_build_info = types.InlineKeyboardMarkup()
 
-# kb_buildings.add(btn_home_buildings)
-# kb_buildings.add(btn_food_buildings)
-# kb_buildings.add(btn_stock_buildings)
-# kb_buildings.add(btn_energy_buildings)
-# kb_buildings.add(btn_graviton_buildings)
-
 btn_back_buildings = types.InlineKeyboardButton(
     text="назад", callback_data="back_buildings"
 )

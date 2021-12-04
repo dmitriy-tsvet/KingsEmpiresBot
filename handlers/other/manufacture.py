@@ -14,14 +14,10 @@ from utils.misc.read_file import read_txt_file
 
 
 @dp.message_handler(state="*", commands="manufacture")
-async def territory_handler(message: types.Message, state: FSMContext):
-    data = await state.get_data()
+async def manufacture_command_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
     session = db_api.CreateSession()
-
-    manufacture: tables.Manufacture = session.db.query(
-        tables.Manufacture).filter_by(user_id=user_id).first()
 
     timer.ManufactureTimer().get_creation_queue(user_id=user_id)
 
@@ -50,7 +46,7 @@ async def territory_handler(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(regexp=ManufactureRegexp.back)
-async def callback_handler2(callback: types.CallbackQuery, state: FSMContext):
+async def manufacture_back_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
 
@@ -70,14 +66,13 @@ async def callback_handler2(callback: types.CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(regexp=ManufactureRegexp.menu)
-async def callback_handler(callback: types.CallbackQuery, state: FSMContext):
+async def manufacture_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
+    manufacture_msg: types.Message = data.get("manufacture_msg")
 
     if data.get("user_id") != user_id:
         return await callback.answer("Не трогай чужое!")
-
-    manufacture_msg: types.Message = data.get("manufacture_msg")
 
     building_manufacture_pos = re.findall(r"building_manufacture_pos_(\d+)", callback.data)
     create_product = re.findall(r"create_product_(\d+)", callback.data)
@@ -85,7 +80,6 @@ async def callback_handler(callback: types.CallbackQuery, state: FSMContext):
 
     session = db_api.CreateSession()
 
-    # tables data
     manufacture: tables.Manufacture = session.db.query(
         tables.Manufacture).filter_by(user_id=user_id).first()
 

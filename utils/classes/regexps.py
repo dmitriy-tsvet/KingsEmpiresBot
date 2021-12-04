@@ -21,13 +21,13 @@ class ClanRegexp:
 
 
 class ContestRegexp:
-    capture = r"select_capture_territory|territory_(\d+)"
+    menu = r"select_capture_territory|territory_(\d+)"
     camp = r"select_camp|camp_(\d+)"
     back = r"back_contest"
 
 
 class BuildingsRegexp:
-    building = r"building_pos_(\d+)|build_info_(\d+)|start_build|building_page_(\d+)"
+    menu = r"building_pos_(\d+)|build_info_(\d+)|start_build|building_page_(\d+)"
     clan_building = r"fix_clan_building|upgrade_clan_building"
     unlocked_buildings = r"unlocked_buildings_page_(\d+)"
     tree = r"tree_pos_(\d+)|cut_down"

@@ -15,26 +15,22 @@ from utils.models import ages
 
 
 @dp.message_handler(state="*", commands="campaign")
-async def territory_handler(message: types.Message, state: FSMContext):
+async def campaign_command_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
     session = db_api.CreateSession()
 
     campaign: tables.Campaign = session.db.query(
         tables.Campaign).filter_by(user_id=user_id).first()
-
     townhall: tables.TownHall = session.db.query(
         tables.TownHall).filter_by(user_id=user_id).first()
 
-    units: tables.Units = session.db.query(
-        tables.Units).filter_by(user_id=user_id).first()
-
     base_campaigns = ages.Age.get_all_campaigns()
     owned_territories = [i for i, x in enumerate(campaign.territory_owned) if x is True]
-    base_units = ages.Age.get_all_units()
 
     campaign_str = ""
     numeration = 0
+
     for territory in enumerate(campaign.territory_owned):
         index = territory[0]
         value = territory[1]
@@ -76,7 +72,7 @@ async def territory_handler(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(regexp=CampaignRegexp.back)
-async def back_handler(callback: types.CallbackQuery, state: FSMContext):
+async def campaign_back_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     campaign_msg: types.Message = data.get("campaign_msg")
@@ -84,15 +80,6 @@ async def back_handler(callback: types.CallbackQuery, state: FSMContext):
     if data.get("user_id") != user_id:
         msg_text = read_txt_file("text/hints/foreign_button")
         return await callback.answer(msg_text)
-
-    session = db_api.CreateSession()
-
-    campaign: tables.Campaign = session.db.query(
-        tables.Campaign).filter_by(user_id=user_id).first()
-
-    base_campaigns = ages.Age.get_all_campaigns()
-
-    msg_text = read_txt_file("text/campaign/campaign")
 
     await campaign_msg.edit_text(
         text=campaign_msg.html_text,
@@ -101,11 +88,10 @@ async def back_handler(callback: types.CallbackQuery, state: FSMContext):
 
     )
     await callback.answer()
-    session.close()
 
 
 @dp.callback_query_handler(state="*", regexp=CampaignRegexp.menu)
-async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
+async def campaign_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     campaign_msg: types.Message = data.get("campaign_msg")
@@ -115,10 +101,6 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
         return await callback.answer(msg_text)
 
     session = db_api.CreateSession()
-    territory_index = re.findall(r"territory_(\d+)", callback.data)
-
-    units: tables.Units = session.db.query(
-        tables.Units).filter_by(user_id=user_id).first()
 
     campaign: tables.Campaign = session.db.query(
         tables.Campaign).filter_by(user_id=user_id).first()
@@ -184,7 +166,6 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
                     text=msg_text.format(*time_left),
                     reply_markup=keyboards.campaigns.kb_back_campaign
                 )
-
             session.close()
             return
 
@@ -196,6 +177,9 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
             text=msg_text,
             reply_markup=keyboard,
         )
+
+        await callback.answer()
+        session.close()
 
 
 @dp.callback_query_handler(state="*", regexp=CampaignRegexp.select_territory)
@@ -282,7 +266,7 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(state="*", regexp=CampaignRegexp.start_capture)
-async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
+async def campaign_capture_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     campaign_msg: types.Message = data.get("campaign_msg")

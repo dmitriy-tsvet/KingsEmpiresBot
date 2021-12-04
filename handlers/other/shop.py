@@ -39,7 +39,7 @@ async def shop_handler(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(state="*", regexp=regexps.ShopRegexp.back)
-async def shop_menu_handler(callback: types.CallbackQuery, state: FSMContext):
+async def shop_back_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
 
@@ -62,7 +62,7 @@ async def shop_menu_handler(callback: types.CallbackQuery, state: FSMContext):
         )
 
 
-@dp.callback_query_handler(state="*", regexp=regexps.ShopRegexp.menu)
+@dp.callback_query_handler(regexp=regexps.ShopRegexp.menu)
 async def shop_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
@@ -90,9 +90,9 @@ async def shop_menu_handler(callback: types.CallbackQuery, state: FSMContext):
         })
 
     elif callback.data == "shop_money":
-
         keyboard = kb_constructor.StandardKeyboard(
             user_id=user_id).create_shop_money_keyboard()
+
         msg_text = read_txt_file("text/shop/shop_money")
         await shop_msg.edit_text(
             text=msg_text.format(townhall.money, townhall.diamonds),
@@ -101,6 +101,7 @@ async def shop_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     elif callback.data == "shop_stock":
         keyboard = kb_constructor.StandardKeyboard(
             user_id=user_id).create_shop_stock_keyboard()
+
         msg_text = read_txt_file("text/shop/shop_stock")
         await shop_msg.edit_text(
             text=msg_text.format(townhall.stock, townhall.diamonds),
@@ -113,11 +114,12 @@ async def shop_menu_handler(callback: types.CallbackQuery, state: FSMContext):
             reply_markup=keyboards.shop.kb_donate
         )
 
+    await callback.answer()
     session.close()
 
 
-@dp.callback_query_handler(state="*", regexp=regexps.ShopRegexp.buy)
-async def shop_menu_handler(callback: types.CallbackQuery, state: FSMContext):
+@dp.callback_query_handler(regexp=regexps.ShopRegexp.buy)
+async def shop_buying_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
 

@@ -2,7 +2,6 @@ from . import start
 from . import reg
 from . import townhall
 from . import buildings
-# from . import test_handler
 from . import campaign
 from . import clan
 from . import contest

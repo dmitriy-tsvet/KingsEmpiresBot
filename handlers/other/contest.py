@@ -1,3 +1,7 @@
+#
+# This module isn't fully developed.
+#
+
 import re
 
 from aiogram import types
@@ -22,7 +26,7 @@ color = {
 
 
 @dp.message_handler(state="*", commands="contest")
-async def territory_handler(message: types.Message, state: FSMContext):
+async def contest_command_handler(message: types.Message, state: FSMContext):
     await state.reset_state(with_data=False)
     user_id = message.from_user.id
 
@@ -134,8 +138,8 @@ async def territory_handler(message: types.Message, state: FSMContext):
     session.close()
 
 
-@dp.callback_query_handler(state="*", regexp=ContestRegexp.back)
-async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext):
+@dp.callback_query_handler(regexp=ContestRegexp.back)
+async def contest_back_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     contest_msg: types.Message = data.get("contest_msg")
@@ -152,8 +156,8 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
     await callback.answer()
 
 
-@dp.callback_query_handler(state="*", regexp=ContestRegexp.capture)
-async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
+@dp.callback_query_handler(state="*", regexp=ContestRegexp.menu)
+async def contest_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     contest_msg: types.Message = data.get("contest_msg")
@@ -296,20 +300,19 @@ async def set_capture_units_handler(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(state=states.Contest.start_capture)
-async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
+async def contest_capture_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    contest_msg: types.Message = data.get("contest_msg")
-    territory_index = data.get("territory_index")
-    capture_units_count = data.get("capture_units_count")
     user_id = callback.from_user.id
-    session = db_api.CreateSession()
+    contest_msg: types.Message = data.get("contest_msg")
+
+    capture_units_count = data.get("capture_units_count")
+    territory_index = data.get("territory_index")
     explore = re.findall(r"explore_price_(\d+)", callback.data)
+
+    session = db_api.CreateSession()
 
     townhall: tables.TownHall = session.db.query(
         tables.TownHall).filter_by(user_id=user_id).first()
-
-    units: tables.Units = session.db.query(
-        tables.Units).filter_by(user_id=user_id).first()
 
     clan_member: tables.ClanMember = session.db.query(
         tables.ClanMember).filter_by(user_id=user_id).join(tables.Clan).first()
@@ -384,7 +387,7 @@ async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(state="*", regexp=ContestRegexp.camp)
-async def capture_handler(callback: types.CallbackQuery, state: FSMContext):
+async def contest_camp_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     contest_msg: types.Message = data.get("contest_msg")
@@ -468,8 +471,8 @@ async def set_capture_units_handler(message: types.Message, state: FSMContext):
     await contest_msg.edit_text(
         text="🏕 Лагерь {}\n"
              "Юнитов: {}".format(
-            contest.territory_names[camp_index],
-            contest.territory_units[camp_index]),
+                contest.territory_names[camp_index],
+                contest.territory_units[camp_index]),
         reply_markup=keyboards.contest.kb_back
     )
 

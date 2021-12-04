@@ -15,7 +15,7 @@ price = r"цена|прайс"
 
 
 @dp.message_handler(filters.IsReplyFilter(True), regexp=regexps.ClanRegexp.donate, state="*")
-async def forwarding_units_handler(message: types.Message, state: FSMContext):
+async def forwarding_units_handler(message: types.Message):
     replied_user_id = message.reply_to_message.from_user.id
     user_id = message.from_user.id
 
@@ -122,7 +122,7 @@ async def forwarding_units_handler(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(regexp=sell_product, state="*")
-async def sell_product(message: types.Message, state: FSMContext):
+async def sell_product(message: types.Message):
     user_id = message.from_user.id
 
     all_products = []
@@ -152,13 +152,13 @@ async def sell_product(message: types.Message, state: FSMContext):
         r"продать\s+(\d+)\s+(.*)\s+за\s+(\d+)", message.text)[0]
 
     product_name = result[1]
-    print(product_name)
+
     count = int(result[0])
     price = int(result[2])
 
     reg = re.compile(r"\W+\s+(?i)({})".format(product_name))
     selling_product = list(filter(reg.match, unlocked_products))
-    print(selling_product)
+
     if not selling_product:
         await message.reply("Нету такого товара.")
         session.close()
@@ -171,7 +171,7 @@ async def sell_product(message: types.Message, state: FSMContext):
 
     manufacture_storage = list(manufacture.storage)
     products_id = [product["product_id"] for product in manufacture_storage]
-    print(products_id)
+
     if unlocked_products.index(selling_product[0]) not in products_id:
         await message.reply("У вас нету этого товара.")
         session.close()
@@ -230,40 +230,5 @@ async def sell_product(message: types.Message, state: FSMContext):
 
     session.close()
 
-
-# @dp.message_handler(filters.IsReplyFilter(True), regexp=price, state="*")
-# async def sell_product(message: types.Message, state: FSMContext):
-#     user_id = message.from_user.id
-#     new_session = db_api.CreateSession()
-#     townhall_table: tables.TownHall = new_session.filter_by_user_id(
-#         user_id=user_id, table=tables.TownHall
-#     )
-#     current_state = await state.get_state()
-#     age_model: models.Age = ages.AgesList.get_age_model(townhall_table.age)
-#
-#     if current_state == "Units:menu":
-#         text = ""
-#         for unit in age_model.units:
-#             create_price = transaction.Transaction.get_text_price(
-#                 unit.create_price)
-#
-#             text += "x1{} - {}\n".format(unit.name, create_price)
-#
-#         await message.reply(
-#             text=text
-#         )
-#
-#     elif current_state == "Citizens:menu":
-#
-#         create_price = transaction.Transaction.get_text_price(
-#             age_model.citizen.create_price)
-#
-#         text = "x1{} Житель - {}\n".format(
-#             age_model.citizen.name,
-#             create_price)
-#
-#         await message.reply(
-#             text=text
-#         )
 
 

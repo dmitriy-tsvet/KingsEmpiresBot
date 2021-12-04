@@ -15,7 +15,7 @@ import keyboards
 
 
 @dp.message_handler(state="*", commands="units")
-async def units_handler(message: types.Message, state: FSMContext):
+async def units_command_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
     session = db_api.CreateSession()
@@ -51,7 +51,6 @@ async def units_handler(message: types.Message, state: FSMContext):
         "unit_msg": unit_msg,
     })
 
-    # await states.Units.menu.set()
     session.close()
 
 
@@ -76,7 +75,7 @@ async def back_units_handler(callback: types.CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(regexp=r"unit_(\d+)")
-async def reply_menu_handler(callback: types.CallbackQuery, state: FSMContext):
+async def checking_unit_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
 
@@ -111,7 +110,7 @@ async def reply_menu_handler(callback: types.CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(IsReplyFilter(True), regexp=r"(сделать|создать)\s+(\d+)\s+(\d+)")
-async def reply_menu_handler(message: types.Message, state: FSMContext):
+async def creating_units_handler(message: types.Message, state: FSMContext):
     data = await state.get_data()
     user_id = message.from_user.id
 

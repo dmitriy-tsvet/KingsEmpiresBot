@@ -32,12 +32,10 @@ btn_settings = types.InlineKeyboardButton(
     text="⚙ Настройки", callback_data="clan_settings"
 )
 kb_leader_clan.add(btn_war)
-# kb_leader_clan.add(btn_tavern)
 kb_leader_clan.row(btn_members, btn_settings)
 
 kb_recruit_clan = types.InlineKeyboardMarkup()
 
-# kb_recruit_clan.add(btn_tavern)
 kb_recruit_clan.add(btn_members)
 
 kb_back = types.InlineKeyboardMarkup()

@@ -1,7 +1,5 @@
 from loader import dp
 from aiogram import types
-from aiogram.dispatcher import filters
-from aiogram.types import ContentTypes
 
 
 @dp.callback_query_handler(state="*")

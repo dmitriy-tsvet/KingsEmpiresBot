@@ -1,5 +1,3 @@
-import asyncio
-
 from loader import bot
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.handler import CancelHandler, current_handler

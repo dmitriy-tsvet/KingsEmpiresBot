@@ -18,14 +18,9 @@ import keyboards
 
 
 @dp.message_handler(state="*", commands="buildings")
-async def buildings_handler(message: types.Message, state: FSMContext):
+async def buildings_command_handler(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-
     session = db_api.CreateSession()
-
-    # tables data
-    townhall: tables.TownHall = session.filter_by_user_id(
-        user_id=user_id, table=tables.TownHall)
 
     buildings: tables.Buildings = session.filter_by_user_id(
         user_id=user_id, table=tables.Buildings)
@@ -34,10 +29,6 @@ async def buildings_handler(message: types.Message, state: FSMContext):
 
     keyboard = kb_constructor.PaginationKeyboard(
         user_id=user_id).create_buildings_keyboard()
-    # building_img = random.choice(age_model.buildings_img)
-
-    # with open("data/img/buildings/{}.webp".format(building_img), 'rb') as sticker:
-    #     await message.answer_sticker(sticker=sticker)
 
     msg_text = read_txt_file("text/buildings/buildings")
     buildings_msg = await message.answer(
@@ -47,17 +38,16 @@ async def buildings_handler(message: types.Message, state: FSMContext):
         reply_markup=keyboard
     )
 
-    session.close()
-
     await state.update_data({
         "user_id": user_id,
         "buildings_msg": buildings_msg
     })
-    # await states.Buildings.menu.set()
+
+    session.close()
 
 
-@dp.callback_query_handler(state="*", regexp=BuildingsRegexp.back)
-async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext):
+@dp.callback_query_handler(regexp=BuildingsRegexp.back)
+async def buildings_back_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     buildings_msg: types.Message = data.get("buildings_msg")
@@ -76,8 +66,8 @@ async def townhall_menu_handler(callback: types.CallbackQuery, state: FSMContext
     await callback.answer()
 
 
-@dp.callback_query_handler(regexp=BuildingsRegexp.building)
-async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
+@dp.callback_query_handler(regexp=BuildingsRegexp.menu)
+async def buildings_menu_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     buildings_msg: types.Message = data.get("buildings_msg")
@@ -123,7 +113,7 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
         })
 
         if buildings.buildings[position] is None:
-            # нужно говорить юзеру, если у него нету зданий
+
             keyboard = kb_constructor.PaginationKeyboard(
                 user_id=user_id).create_unlocked_buildings_keyboard()
 
@@ -184,7 +174,6 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
                         ),
                         reply_markup=keyboard
                     )
-
             else:
                 msg_text = read_txt_file("text/buildings/builder_home")
                 await buildings_msg.edit_text(
@@ -194,10 +183,11 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
 
     elif build_info:
         build_num = int(build_info[0])
+
         if data.get("build_pos") is None:
             return
-        building = base_buildings[build_num]
 
+        building = base_buildings[build_num]
         build_time = timer.Timer.get_left_time_min(building.create_time_sec)
         build_price = transaction.Purchase.get_price(building.create_price)
 
@@ -320,7 +310,7 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(regexp=BuildingsRegexp.clan_building)
-async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
+async def clan_building_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     buildings_msg: types.Message = data.get("buildings_msg")
@@ -336,15 +326,6 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
 
     buildings: tables.Buildings = session.db.query(
         tables.Buildings).filter_by(user_id=user_id).first()
-
-    page_move = re.findall(r"building_page_(\d+)", callback.data)
-    building_pos = re.findall(r"building_pos_(\d+)", callback.data)
-    build_info = re.findall(r"build_info_(\d+)", callback.data)
-
-    base_buildings: typing.List[typing.Union[
-        base.BuilderHome, base.StockBuilding, base.ClanBuilding,
-        base.ManufactureBuilding
-    ]] = ages.Age.get_all_buildings()
 
     if callback.data == "fix_clan_building":
         buying = transaction.Purchase.buy(
@@ -390,7 +371,7 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(regexp=BuildingsRegexp.unlocked_buildings)
-async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
+async def list_unlocked_buildings_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
     buildings_msg: types.Message = data.get("buildings_msg")
@@ -399,20 +380,7 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
         msg_text = read_txt_file("text/hints/foreign_button")
         return await callback.answer(msg_text)
 
-    session = db_api.CreateSession()
-
-    townhall: tables.TownHall = session.filter_by_user_id(
-        user_id=user_id, table=tables.TownHall)
-
-    buildings: tables.Buildings = session.db.query(
-        tables.Buildings).filter_by(user_id=user_id).first()
-
     page_move = re.findall(r"unlocked_buildings_page_(\d+)", callback.data)
-
-    base_buildings: typing.List[typing.Union[
-        base.BuilderHome, base.StockBuilding, base.ClanBuilding,
-        base.ManufactureBuilding
-    ]] = ages.Age.get_all_buildings()
 
     if page_move:
         page = int(page_move[0])
@@ -426,12 +394,11 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
         except exceptions.MessageNotModified:
             pass
 
-    session.close()
     await callback.answer()
 
 
 @dp.callback_query_handler(regexp=BuildingsRegexp.tree)
-async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
+async def obstacles_handler(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     user_id = callback.from_user.id
 
@@ -443,19 +410,10 @@ async def buildings_handler(callback: types.CallbackQuery, state: FSMContext):
 
     session = db_api.CreateSession()
 
-    # tables data
-    townhall: tables.TownHall = session.filter_by_user_id(
-        user_id=user_id, table=tables.TownHall)
-
     buildings: tables.Buildings = session.db.query(
         tables.Buildings).filter_by(user_id=user_id).first()
 
     tree_pos = re.findall(r"tree_pos_(\d+)", callback.data)
-
-    base_buildings: typing.List[typing.Union[
-        base.BuilderHome, base.StockBuilding, base.ClanBuilding,
-        base.ManufactureBuilding
-    ]] = ages.Age.get_all_buildings()
 
     if tree_pos:
         pos = int(tree_pos[0])
